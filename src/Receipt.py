@@ -47,4 +47,4 @@ class Receipt:
                 "Quantity: " + str(self.__Quantity) + "\n" \
                 "Q_Discount_Amount: " + str(self.__Q_Discount_Amount) + "\n" \
                 "Q_Amount: " + str(self.__Q_Amount) + "\n" \
-                "T_Receipt: " + str(self.__T_Receipt) + "\n" \
+                "T_Receipt: " + str(self.__T_Receipt) + "\n"
