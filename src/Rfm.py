@@ -12,21 +12,21 @@
 class Rfm:
     # Metodo costruttore
     def __init__(self, recency, frequency, monetary):
-        self.recency = recency
-        self.frequency = frequency
-        self.monetary = monetary
+        self.__recency = recency
+        self.__frequency = frequency
+        self.__monetary = monetary
 
     # Metodo get per Recency
     def getRecency(self):
-        return self.recency
+        return self.__recency
 
     # Metodo get per Frequency
     def getFrequency(self):
-        return self.frequency
+        return self.__frequency
 
     # Metodo get per Monetary
     def getMonetary(self):
-        return self.monetary
+        return self.__monetary
 
     # Metodo toScore: da rivalutare
     #def toScore(self):
