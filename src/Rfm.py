@@ -9,6 +9,7 @@
                  Monetary: questo fattore riflette quanto un cliente ha speso.
 """
 
+
 class Rfm:
     # Metodo costruttore
     def __init__(self, recency, frequency, monetary):
@@ -29,4 +30,5 @@ class Rfm:
         return self.__monetary
 
     # Metodo toScore: da rivalutare
-    #def toScore(self):
+    def toScore(self):
+        print(str(self.getRecency()) + " " + str(self.getFrequency()) + " " + str(self.getMonetary()))
