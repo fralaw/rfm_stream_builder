@@ -10,6 +10,7 @@ from Rfm import Rfm
 
 class Example:
     __desc: list[Rfm] = []
+    __labelTimeStamp = None
 
     def __init__(self, startTimeStamp):
         self.__startTimeStamp = startTimeStamp
@@ -22,3 +23,9 @@ class Example:
 
     def getDesc(self):
         return self.__desc
+
+    def setLabelTimeStamp(self, labelTimeStamp):
+        self.__labelTimeStamp = labelTimeStamp
+
+    def getLabelTimeStamp(self):
+        return self.__labelTimeStamp
