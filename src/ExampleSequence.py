@@ -11,8 +11,16 @@ from Example import Example
 class ExampleSequence:
     __examples: list[Example]
 
+    # Costruttore: inizializza la lista example come lista vuota
     def __init__(self):
         self.__examples = []
 
+    # Metodo append per aggiungere un nuovo esempio alla sequenza di esempi
     def appendExample(self, ex: Example):
         self.__examples.append(ex)
+
+    # def record(self, label: bool, stram:):
+
+    # da aggiungere?
+    def getExampleSequence(self):
+        return self.__examples
