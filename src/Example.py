@@ -18,7 +18,7 @@ class Example:
     def getStartTimeStamp(self):
         return self.__startTimeStamp
 
-    def addExample(self, desc):
+    def addExample(self, desc: Rfm):
         self.__desc.append(desc)
 
     def getDesc(self):
