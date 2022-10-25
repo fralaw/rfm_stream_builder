@@ -16,10 +16,11 @@ class Day:
     # Metodo costruttore
     def __init__(self, receipts: list = None):
         if receipts is None:
-            receipts = []
-        if receipts is not None:
-            for r in receipts:
-                self.__receipts.append(r)
+            self.__receipts = []
+        if type(receipts) is list:
+            self.__receipts = receipts.copy()
+        else:
+            raise TypeError
 
     # Metodo set
     def addReceipt(self, receipt: Receipt):
