@@ -21,13 +21,10 @@ class ExampleSequence:
     def appendExample(self, ex: Example):
         self.__examples.append(ex)
 
-    # Metodo per aggiungere etichetta all'esempio e inserire nello stream
     def record(self, label: bool, date, stream):
         for ex in self.__examples:
             description = ex.getDesc()
             ex.setLabelTimeStamp(date)
             for rfm in description:
-                row = str(rfm)+","+str(ex.getLabelTimeStamp())+","+str(label)
+                row = str(rfm) + "," + str(ex.getLabelTimeStamp()) + "," + str(label)
                 stream.writerow(row)
-
-
