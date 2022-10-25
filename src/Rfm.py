@@ -30,5 +30,5 @@ class Rfm:
         return self.__monetary
 
     # Metodo toScore: da rivalutare
-    def toScore(self):
-        print(str(self.getRecency()) + " " + str(self.getFrequency()) + " " + str(self.getMonetary()))
+    def __str__(self):
+        return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
