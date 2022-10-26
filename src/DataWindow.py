@@ -113,8 +113,8 @@ class DataWindow:
             timedelta = self.__currentDay - self.__window[elem[0]].getLastReceipt().date()
             if timedelta.days > self.__dim:
                 self.__examples.recordLabeledExample(elem[0], True, self.__currentDay, writer)
-        membersOfDay = data["K_Member"]
-        for i in range(0, len(membersOfDay) - 1):
-            member = membersOfDay[i]
-            self.__examples.recordLabeledExample(member, False, self.__currentDay, writer)
-
+        if data is not None:
+            membersOfDay = data["K_Member"]
+            for i in range(0, len(membersOfDay) - 1):
+                member = membersOfDay[i]
+                self.__examples.recordLabeledExample(member, False, self.__currentDay, writer)

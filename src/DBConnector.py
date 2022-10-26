@@ -43,3 +43,15 @@ class DBConnector:
             return df
         else:
             return None
+
+    def extractFirstDay(self):
+        cursor = self.__mydb.cursor()
+        cursor.execute("SELECT DATE(T_Receipt) FROM Receipts ORDER BY T_Receipt ASC LIMIT 1")
+        rows = cursor.fetchall()
+        return rows[0][0]
+
+    def extractLastDay(self):
+        cursor = self.__mydb.cursor()
+        cursor.execute("SELECT DATE(T_Receipt) FROM Receipts ORDER BY T_Receipt DESC LIMIT 1")
+        rows = cursor.fetchall()
+        return rows[0][0]
