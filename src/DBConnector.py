@@ -33,10 +33,13 @@ class DBConnector:
     # Metodo che effettua la query estraendo le ricevute del giorno
     def extractReceipts(self, gg):
         cursor = self.__mydb.cursor()
-        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = DATE(%s) ORDER BY K_Member, T_Receipt ASC",
+        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC",
                        [gg.isoformat()])
         rows = cursor.fetchall()
-        columns = ["K_Receipt", "K_Member", "Quantity", "Q_Amount", "T_Receipt", "Q_Discount_Amount"]
-        df = pd.DataFrame(rows)
-        df.columns = columns
-        return df
+        if len(rows) != 0:
+            columns = ["K_Receipt", "K_Member", "Quantity", "Q_Amount", "T_Receipt", "Q_Discount_Amount"]
+            df = pd.DataFrame(rows)
+            df.columns = columns
+            return df
+        else:
+            return None
