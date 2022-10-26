@@ -1,3 +1,4 @@
+import csv
 import datetime as dt
 from itertools import islice
 
@@ -22,13 +23,36 @@ class DataWindow:
         self.__window: dict = {}
 
     def set(self, data: pd.DataFrame, index: int | None = None):
-        if index is None:
-            index = (self.__dim * self.__periods) - 1
-        self.__currentDay = data.iloc[0]["T_Receipt"].to_pydatetime().date()
-        receipts = []
-        for i in range(0, data.shape[0] - 1):
+        if data is not None:
+            if index is None:
+                index = (self.__dim * self.__periods) - 1
+            self.__currentDay = data.iloc[0]["T_Receipt"].to_pydatetime().date()
+            receipts = []
+            for i in range(0, data.shape[0] - 1):
 
-            row = data.iloc[i]
+                row = data.iloc[i]
+                K_Receipt = row["K_Receipt"]
+                K_Member = row["K_Member"]
+                Quantity = row["Quantity"]
+                Q_Amount = row["Q_Amount"]
+                Q_Discount_Amount = row["Q_Discount_Amount"]
+                T_Receipt = row["T_Receipt"].to_pydatetime()
+
+                receipts.append(
+                    Receipt(K_Receipt, K_Member, Quantity, Q_Amount, Q_Discount_Amount, T_Receipt))
+                lastPurchase = T_Receipt
+
+                if data.iloc[i + 1]["K_Member"] != K_Member:
+                    day = Day(receipts)
+                    if K_Member not in self.__window:
+                        cw = CustomerWindow(K_Member, self.__dim * self.__periods)
+                        cw.setDay(day, lastPurchase, index)
+                        self.__window[K_Member] = cw
+                    else:
+                        self.__window[K_Member].setDay(day, lastPurchase, index)
+                    receipts.clear()
+
+            row = data.iloc[data.shape[0] - 1]
             K_Receipt = row["K_Receipt"]
             K_Member = row["K_Member"]
             Quantity = row["Quantity"]
@@ -39,36 +63,14 @@ class DataWindow:
             receipts.append(
                 Receipt(K_Receipt, K_Member, Quantity, Q_Amount, Q_Discount_Amount, T_Receipt))
             lastPurchase = T_Receipt
-
-            if data.iloc[i + 1]["K_Member"] != K_Member:
-                day = Day(receipts)
-                if K_Member not in self.__window:
-                    cw = CustomerWindow(K_Member, self.__dim * self.__periods)
-                    cw.setDay(day, lastPurchase, index)
-                    self.__window[K_Member] = cw
-                else:
-                    self.__window[K_Member].setDay(day, lastPurchase, index)
-                receipts.clear()
-
-        row = data.iloc[data.shape[0] - 1]
-        K_Receipt = row["K_Receipt"]
-        K_Member = row["K_Member"]
-        Quantity = row["Quantity"]
-        Q_Amount = row["Q_Amount"]
-        Q_Discount_Amount = row["Q_Discount_Amount"]
-        T_Receipt = row["T_Receipt"].to_pydatetime()
-
-        receipts.append(
-            Receipt(K_Receipt, K_Member, Quantity, Q_Amount, Q_Discount_Amount, T_Receipt))
-        lastPurchase = T_Receipt
-        day = Day(receipts.copy())
-        if K_Member not in self.__window:
-            cw = CustomerWindow(K_Member, self.__dim * self.__periods)
-            cw.setDay(day, lastPurchase, index)
-            self.__window[K_Member] = cw
-        else:
-            self.__window[K_Member].setDay(day, lastPurchase, index)
-        receipts.clear()
+            day = Day(receipts.copy())
+            if K_Member not in self.__window:
+                cw = CustomerWindow(K_Member, self.__dim * self.__periods)
+                cw.setDay(day, lastPurchase, index)
+                self.__window[K_Member] = cw
+            else:
+                self.__window[K_Member].setDay(day, lastPurchase, index)
+            receipts.clear()
 
     def clean(self):
         for elem in self.__window.items():
@@ -80,7 +82,6 @@ class DataWindow:
             elem[1].deleteLatestDay()
 
     def generateExamples(self):
-
         for elem in self.__window.items():
             example = Example(self.__currentDay)
             days = elem[1].getListOfDays()
@@ -88,7 +89,6 @@ class DataWindow:
             length_to_split = [self.__dim] * self.__periods
             periods = [list(islice(iter_days, elem))
                        for elem in length_to_split]
-
             for period in periods:
                 recency = 0
                 frequency = 0
@@ -101,20 +101,20 @@ class DataWindow:
                             monetary += receipt.getQAmount()
                             rfm = Rfm(recency, frequency, monetary)
                             example.addExample(rfm)
-                            self.__examples.insertExample(elem[0], example)
                     else:
                         recency = len(period) - period.index(day) - 1
-                        rfm = Rfm(recency, frequency, monetary)
-                        example.addExample(rfm)
-                        self.__examples.insertExample(elem[0], example)
+                        if monetary != 0:
+                            rfm = Rfm(recency, frequency, monetary)
+                            example.addExample(rfm)
+            self.__examples.insertExample(elem[0], example)
 
+    def generateLabels(self, data: pd.DataFrame, writer):
+        for elem in self.__examples.getDict().items():
+            timedelta = self.__currentDay - self.__window[elem[0]].getLastReceipt().date()
+            if timedelta.days > self.__dim:
+                self.__examples.recordLabeledExample(elem[0], True, self.__currentDay, writer)
+        membersOfDay = data["K_Member"]
+        for i in range(0, len(membersOfDay) - 1):
+            member = membersOfDay[i]
+            self.__examples.recordLabeledExample(member, False, self.__currentDay, writer)
 
-
-
-dw = DataWindow(7, 4)
-db = DBConnector(password="Cicciopazzo98")
-df = db.extractReceipts(dt.date(2009, 1, 12))
-dw.set(df, 1)
-dw.set(df, 15)
-
-dw.generateExamples()

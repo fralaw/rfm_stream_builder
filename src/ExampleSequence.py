@@ -6,8 +6,6 @@
 """
 
 from Example import Example
-from Rfm import Rfm
-import csv
 
 
 class ExampleSequence:
@@ -22,9 +20,20 @@ class ExampleSequence:
         self.__examples.append(ex)
 
     def record(self, label: bool, date, stream):
-        for ex in self.__examples:
-            description = ex.getDesc()
-            ex.setLabelTimeStamp(date)
-            for rfm in description:
-                row = str(rfm) + "," + str(ex.getLabelTimeStamp()) + "," + str(label)
-                stream.writerow(row)
+        if label is True:
+            for ex in self.__examples:
+                description = ex.getDesc()
+                ex.setLabelTimeStamp(date)
+                for rfm in description:
+                    row = [str(rfm), str(ex.getLabelTimeStamp()), str(label)]
+                    stream.writerow(row)
+                self.__examples.clear()
+        else:
+            if len(self.__examples) > 1:
+                for i in range(0, len(self.__examples) - 2):
+                    ex = self.__examples[i]
+                    description = ex.getDesc()
+                    ex.setLabelTimeStamp(date)
+                    for rfm in description:
+                        row = [str(rfm), str(ex.getLabelTimeStamp()), str(label)]
+                        stream.writerow(row)
