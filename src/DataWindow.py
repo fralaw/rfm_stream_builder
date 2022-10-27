@@ -14,6 +14,8 @@ from Rfm import Rfm
 
 
 class DataWindow:
+    __dim: int = 0
+    __periods: int = 0
 
     def __init__(self, dim: int, periods: int):
         self.__dim: int = dim
@@ -22,55 +24,51 @@ class DataWindow:
         self.__examples: ExampleDictionary = ExampleDictionary()
         self.__window: dict = {}
 
-    def set(self, data: pd.DataFrame, index: int | None = None):
-        if data is not None:
-            if index is None:
-                index = (self.__dim * self.__periods) - 1
-            self.__currentDay = data.iloc[0]["T_Receipt"].to_pydatetime().date()
-            receipts = []
-            for i in range(0, data.shape[0] - 1):
+    def set(self, data: list[tuple], dateToSet: dt.date, index: int = (__dim * __periods) - 1):
+        self.__currentDay = dateToSet
+        # Lista che contiene le liste di ricevute di ciascun cliente
+        receipts = []
+        try:
+            # Prima ricevuta
+            row = data[0]
+            # Salviamo il 'K_Member' della lista data in prima posizione, in modo da usarlo come confronto iniziale
+            oldMember = data[0][1]
+            # Aggiungiamo l'oggetto Receipt alla lista.
+            receipts.append(Receipt(row[0], row[1], row[2], row[3], row[4], row[5]))
+            # T_Receipt
+            lastPurchase = row[5]
 
-                row = data.iloc[i]
-                K_Receipt = row["K_Receipt"]
-                K_Member = row["K_Member"]
-                Quantity = row["Quantity"]
-                Q_Amount = row["Q_Amount"]
-                Q_Discount_Amount = row["Q_Discount_Amount"]
-                T_Receipt = row["T_Receipt"].to_pydatetime()
-
-                receipts.append(
-                    Receipt(K_Receipt, K_Member, Quantity, Q_Amount, Q_Discount_Amount, T_Receipt))
-                lastPurchase = T_Receipt
-
-                if data.iloc[i + 1]["K_Member"] != K_Member:
+            # Scandisce la lista di tuple
+            for i in range(1, len(data) - 1):
+                row = data[i]
+                # Confronta l'attuale 'K_Member' con l'old_Member, cioè se siamo ancora sulle ricevute di old cliente
+                if row[1] != oldMember:
+                    # Costruisce il Day passando come oggetto la lista di receipts
                     day = Day(receipts)
-                    if K_Member not in self.__window:
-                        cw = CustomerWindow(K_Member, self.__dim * self.__periods)
-                        cw.setDay(day, lastPurchase, index)
-                        self.__window[K_Member] = cw
-                    else:
-                        self.__window[K_Member].setDay(day, lastPurchase, index)
-                    receipts.clear()
+                    try:
+                        # Prova ad accedere alla customer window e settare il day in posizione index
+                        self.__window[oldMember].setDay(day, lastPurchase, index)
+                    except KeyError:
+                        # Altrimenti inizializza
+                        cw = CustomerWindow(oldMember, self.__dim * self.__periods)
+                        self.__window[oldMember] = cw.setDay(day, lastPurchase, index)
+                    # Svuotiamo la lista di receipts
+                    receipts = []
+                    # Settiamo il nuovo K_Member come old
+                    oldMember = row[1]
+                # Aggiungi la ricevuta alla lista di receipts
+                receipts.append(Receipt(row[0], row[1], row[2], row[3], row[4], row[5]))
 
-            row = data.iloc[data.shape[0] - 1]
-            K_Receipt = row["K_Receipt"]
-            K_Member = row["K_Member"]
-            Quantity = row["Quantity"]
-            Q_Amount = row["Q_Amount"]
-            Q_Discount_Amount = row["Q_Discount_Amount"]
-            T_Receipt = row["T_Receipt"].to_pydatetime()
-
-            receipts.append(
-                Receipt(K_Receipt, K_Member, Quantity, Q_Amount, Q_Discount_Amount, T_Receipt))
-            lastPurchase = T_Receipt
-            day = Day(receipts.copy())
-            if K_Member not in self.__window:
-                cw = CustomerWindow(K_Member, self.__dim * self.__periods)
-                cw.setDay(day, lastPurchase, index)
-                self.__window[K_Member] = cw
-            else:
-                self.__window[K_Member].setDay(day, lastPurchase, index)
-            receipts.clear()
+                # L'ultimo cliente non sarà mai precedente di nessuno, viene aggiunto a prescindere
+                if i == len(data-1):
+                    day = Day(receipts)
+                    try:
+                        self.__window[row[1]].setDay(day, lastPurchase, index)
+                    except KeyError:
+                        cw = CustomerWindow(row[1], self.__dim * self.__periods)
+                        self.__window[row[1]] = cw.setDay(day, lastPurchase, index)
+        except IndexError:
+            pass
 
     def clean(self):
         for elem in self.__window.items():
