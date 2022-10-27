@@ -33,7 +33,7 @@ class StreamBuilder:
         while currentDay != lastDay:
             dataOfDay = self.__mydb.extractReceipts(currentDay)
             if pos != lastPosition:
-                self.__window.set(dataOfDay, pos)
+                self.__window.set(dataOfDay, pos, currentDay)
             else:
                 self.__window.deleteLatestDay()
                 self.__window.set(dataOfDay)

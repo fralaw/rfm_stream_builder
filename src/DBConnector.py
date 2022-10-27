@@ -1,5 +1,6 @@
 import mysql.connector
 import pandas as pd
+import datetime as dt
 
 """
 // Name        : DBConnector.py
@@ -36,13 +37,7 @@ class DBConnector:
         cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC",
                        [gg.isoformat()])
         rows = cursor.fetchall()
-        if len(rows) != 0:
-            columns = ["K_Receipt", "K_Member", "Quantity", "Q_Amount", "T_Receipt", "Q_Discount_Amount"]
-            df = pd.DataFrame(rows)
-            df.columns = columns
-            return df
-        else:
-            return None
+        return rows
 
     def extractFirstDay(self):
         cursor = self.__mydb.cursor()
