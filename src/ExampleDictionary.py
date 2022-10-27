@@ -6,8 +6,8 @@
                  Ogni K_Member di Receipts è chiave nel dizionario dict<k,v> dove v: è di tipo ExampleSequence.
 """
 
-from ExampleSequence import ExampleSequence
 from Example import Example
+from ExampleSequence import ExampleSequence
 
 
 class ExampleDictionary:
@@ -15,6 +15,10 @@ class ExampleDictionary:
     # Metodo costruttore che inizializza un dizionario vuoto
     def __init__(self):
         self.__examples = {}
+
+    # Metodo per restituire il dizionario
+    def getDict(self):
+        return self.__examples
 
     # Metodo che verifica l'esistenza della chiave passata come parametro nella lista delle chiavi
     def containsKey(self, customer: str):

@@ -30,6 +30,7 @@ class Receipt:
         return self.__Quantity
 
     # Metodo get per il campo Q_Amount
+    def getQAmount(self):
         return self.__Q_Amount
 
     # Metodo get per il campo Q_Discount_Amount
