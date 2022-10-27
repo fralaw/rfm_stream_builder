@@ -32,3 +32,7 @@ class Rfm:
     # Metodo toScore: da rivalutare
     def __str__(self):
         return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
+
+    # Metodo per stampare l'oggetto (contenuto)
+    def __repr__(self):
+        return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
