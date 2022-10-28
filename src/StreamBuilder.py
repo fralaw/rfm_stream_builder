@@ -38,8 +38,11 @@ class StreamBuilder:
                 self.__window.deleteFurthestDay()
                 self.__window.set(dataOfDay, currentDay)
                 self.__window.clean()
-            self.__window.generateExamples()
-            self.__window.generateLabels(dataOfDay, stream)
+            self.__window.generateExamples(pos, stream)
+            # self.__window.generateLabels(dataOfDay, stream)
             currentDay += dt.timedelta(days=1)
             print(currentDay, lastDay)
-            pos+=1
+            pos += 1
+
+
+StreamBuilder("localhost", "root", "Cicciopazzo98", "churn_retail_db", 7, 4, "stream.csv", start=dt.date(2010, 4, 1))

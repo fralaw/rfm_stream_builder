@@ -34,7 +34,7 @@ class DBConnector:
     # Metodo che effettua la query estraendo le ricevute del giorno
     def extractReceipts(self, gg):
         cursor = self.__mydb.cursor()
-        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC",
+        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC LIMIT 10",
                        [gg.isoformat()])
         rows = cursor.fetchall()
         return rows
