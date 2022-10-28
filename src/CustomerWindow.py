@@ -39,7 +39,7 @@ class CustomerWindow:
         self.__lastReceipt = lastReceiptTime
 
     # Metodo che "shifta" la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine
-    def deleteLatestDay(self):
+    def deleteFurthestDay(self):
         self.__dayList.pop(0)
         self.__dayList.append(None)
 

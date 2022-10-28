@@ -33,15 +33,13 @@ class StreamBuilder:
         while currentDay != lastDay:
             dataOfDay = self.__mydb.extractReceipts(currentDay)
             if pos != lastPosition:
-                self.__window.set(dataOfDay, pos, currentDay)
+                self.__window.set(dataOfDay, currentDay, pos)
             else:
-                self.__window.deleteLatestDay()
-                self.__window.set(dataOfDay)
+                self.__window.deleteFurthestDay()
+                self.__window.set(dataOfDay, currentDay)
                 self.__window.clean()
             self.__window.generateExamples()
             self.__window.generateLabels(dataOfDay, stream)
             currentDay += dt.timedelta(days=1)
             print(currentDay, lastDay)
-
-
-StreamBuilder("localhost", "root", "Cicciopazzo98", "churn_retail_db", 30, 3, "stream.csv")
+            pos+=1

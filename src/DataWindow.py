@@ -51,33 +51,33 @@ class DataWindow:
                     except KeyError:
                         # Altrimenti inizializza
                         cw = CustomerWindow(oldMember, self.__dim * self.__periods)
-                        self.__window[oldMember] = cw.setDay(day, lastPurchase, index)
+                        cw.setDay(day, lastPurchase, index)
+                        self.__window[oldMember] = cw
                     # Svuotiamo la lista di receipts
                     receipts = []
                     # Settiamo il nuovo K_Member come old
                     oldMember = row[1]
                 # Aggiungi la ricevuta alla lista di receipts
                 receipts.append(Receipt(row[0], row[1], row[2], row[3], row[4], row[5]))
+                lastPurchase = row[5]
 
                 # L'ultimo cliente non sarà mai precedente di nessuno, viene aggiunto a prescindere
-                if i == len(data-1):
+                if i == len(data)-1:
                     day = Day(receipts)
                     try:
                         self.__window[row[1]].setDay(day, lastPurchase, index)
                     except KeyError:
-                        cw = CustomerWindow(row[1], self.__dim * self.__periods)
+                        cw = CustomerWindow(row[1], lastPurchase, self.__dim * self.__periods)
                         self.__window[row[1]] = cw.setDay(day, lastPurchase, index)
         except IndexError:
             pass
 
     def clean(self):
-        for elem in self.__window.items():
-            if elem[1].isEmpty():
-                del self.__window[elem[0]]
+        self.__window = {key: value for (key, value) in self.__window.items() if not value.isEmpty()}
 
-    def deleteLatestDay(self):
-        for elem in self.__window.items():
-            elem[1].deleteLatestDay()
+    def deleteFurthestDay(self):
+        for val in self.__window.values():
+            val.deleteLatestDay()
 
     def generateExamples(self):
         for elem in self.__window.items():
@@ -106,13 +106,12 @@ class DataWindow:
                             example.addExample(rfm)
             self.__examples.insertExample(elem[0], example)
 
-    def generateLabels(self, data: pd.DataFrame, writer):
+    def generateLabels(self, data: list[tuple], writer):
         for elem in self.__examples.getDict().items():
             timedelta = self.__currentDay - self.__window[elem[0]].getLastReceipt().date()
             if timedelta.days > self.__dim:
                 self.__examples.recordLabeledExample(elem[0], True, self.__currentDay, writer)
         if data is not None:
-            membersOfDay = data["K_Member"]
-            for i in range(0, len(membersOfDay) - 1):
-                member = membersOfDay[i]
+            for row in data:
+                member = row[1]
                 self.__examples.recordLabeledExample(member, False, self.__currentDay, writer)
