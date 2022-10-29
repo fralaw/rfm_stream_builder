@@ -20,12 +20,18 @@ class Example:
         self.__startTimeStamp = startTimeStamp
         self.__desc = []
 
+    def copy(self):
+        ex = Example(None)
+        ex.__desc = self.__desc.copy()
+        ex.__startTimeStamp = self.__startTimeStamp
+        return ex
+
     # Metodo get per StartTimeStamp
     def getStartTimeStamp(self):
         return self.__startTimeStamp
 
     # Metodo add che "appende" un Rfm alla lista di RFM
-    def addExample(self, desc: Rfm):
+    def addRfm(self, desc: Rfm):
         self.__desc.append(desc)
 
     # Metodo get per ritornare la lista di Rfm

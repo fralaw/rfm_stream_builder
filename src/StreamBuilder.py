@@ -29,20 +29,22 @@ class StreamBuilder:
         file = open(streamPath, "w")
         stream = csv.writer(file)
         lastPosition = (churnDim * periods) - 1
-        pos = 0
+
+        for i in range(0, churnDim * periods):
+            dataOfDay = self.__mydb.extractReceipts(currentDay)
+            self.__window.set(dataOfDay, currentDay, i)
+            self.__window.generateExamples(i, stream)
+            currentDay += dt.timedelta(days=1)
+            print(currentDay, lastDay)
         while currentDay != lastDay:
             dataOfDay = self.__mydb.extractReceipts(currentDay)
-            if pos != lastPosition:
-                self.__window.set(dataOfDay, currentDay, pos)
-            else:
-                self.__window.deleteFurthestDay()
-                self.__window.set(dataOfDay, currentDay)
-                self.__window.clean()
-            self.__window.generateExamples(pos, stream)
+            self.__window.deleteFurthestDay()
+            self.__window.set(dataOfDay, currentDay)
+            self.__window.clean()
+            self.__window.generateExamples(churnDim * periods - 1, stream)
             # self.__window.generateLabels(dataOfDay, stream)
             currentDay += dt.timedelta(days=1)
             print(currentDay, lastDay)
-            pos += 1
 
 
-StreamBuilder("localhost", "root", "Cicciopazzo98", "churn_retail_db", 7, 4, "stream.csv", start=dt.date(2010, 4, 1))
+StreamBuilder("localhost", "root", "Cicciopazzo98", "brazilian_churn_retail_db", 7, 4, "stream.csv")

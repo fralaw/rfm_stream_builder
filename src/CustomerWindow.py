@@ -6,8 +6,8 @@ from Day import Day
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe CustomerWindow modella la finestra temporale di un singolo cliente, conservando
-le giornate in cui ha acquistato in una lista a dimensione fissa, la data dell'ultimo acquisto e l'informazione
-sul cliente.
+                 le giornate in cui ha acquistato in una lista a dimensione fissa, la data dell'ultimo acquisto e 
+                 l'informazione sul cliente.
 """
 
 

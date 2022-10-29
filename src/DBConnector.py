@@ -7,7 +7,8 @@ import datetime as dt
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe DBConnector modella la connessione al DB, istanziandola tramite costruttore e chiudendola
-tramite metodo "closeConnection(). Fornisce un metodo che effettua la query sulla tabella Receipt del DB.
+                 tramite metodo "closeConnection(). Fornisce un metodo che effettua la query sulla tabella Receipt 
+                 del DB.
 """
 
 
@@ -34,7 +35,7 @@ class DBConnector:
     # Metodo che effettua la query estraendo le ricevute del giorno
     def extractReceipts(self, gg):
         cursor = self.__mydb.cursor()
-        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC LIMIT 10",
+        cursor.execute("SELECT * FROM Receipts WHERE DATE(T_Receipt) = %s ORDER BY K_Member, T_Receipt ASC",
                        [gg.isoformat()])
         rows = cursor.fetchall()
         return rows

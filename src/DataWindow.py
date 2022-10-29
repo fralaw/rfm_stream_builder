@@ -5,6 +5,7 @@ import numpy as np
 
 import pandas as pd
 
+from RfmException import EmptyRfmException
 from ExampleSequence import ExampleSequence
 from CustomerWindow import CustomerWindow
 from DBConnector import DBConnector
@@ -36,9 +37,9 @@ class DataWindow:
             # Salviamo il 'K_Member' della lista data in prima posizione, in modo da usarlo come confronto iniziale
             oldMember = data[0][1]
             # Aggiungiamo l'oggetto Receipt alla lista.
-            receipts.append(Receipt(row[0], row[1], row[2], row[3], row[5], row[4]))
+            receipts.append(Receipt(row[0], row[1], row[2], row[3], row[4], row[5]))
             # T_Receipt
-            lastPurchase = row[4]
+            lastPurchase = row[5]
 
             # Scandisce la lista di tuple
             for i in range(1, len(data) - 1):
@@ -60,17 +61,18 @@ class DataWindow:
                     # Settiamo il nuovo K_Member come old
                     oldMember = row[1]
                 # Aggiungi la ricevuta alla lista di receipts
-                receipts.append(Receipt(row[0], row[1], row[2], row[3], row[5], row[4]))
-                lastPurchase = row[4]
+                receipts.append(Receipt(row[0], row[1], row[2], row[3], row[4], row[5]))
+                lastPurchase = row[5]
 
                 # L'ultimo cliente non sarà mai precedente di nessuno, viene aggiunto a prescindere
-                if i == len(data) - 1:
-                    day = Day(receipts)
-                    try:
-                        self.__window[row[1]].setDay(day, lastPurchase, index)
-                    except KeyError:
-                        cw = CustomerWindow(row[1], lastPurchase, self.__dim * self.__periods)
-                        self.__window[row[1]] = cw.setDay(day, lastPurchase, index)
+
+            day = Day(receipts)
+            try:
+                self.__window[row[1]].setDay(day, lastPurchase, index)
+            except KeyError:
+                cw = CustomerWindow(row[1], (self.__dim * self.__periods))
+                cw.setDay(day, lastPurchase, index)
+                self.__window[row[1]] = cw
         except IndexError:
             pass
 
@@ -91,6 +93,7 @@ class DataWindow:
         # currentDayIndex = posizione nel periodo
         currentDayIndex = index - (currentPeriodIndex * self.__dim)
 
+        # [],[r1],[],[],[],[],[]     |     [],[],[churn],[],[],[],[r5]     |      [],[],[],[r2],[],[],[]     |      [],[],[],[],[],[],[]
         # CASO 1:
         # Generazione esempi per tutti quei clienti che sono nel dizionario ExampleDictionary in attesa di essere
         # etichettati e non hanno comprato oggi
@@ -98,33 +101,8 @@ class DataWindow:
         # Lista di customer window dei clienti che in current day non hanno effettuato acquisti
         try:
             windows = [cw for cw in self.__window.values()
-                       if self.__dim <= self.__currentDay - cw.getLastReceipt() >= 1]
+                       if 1 <= self.__currentDay - cw.getLastReceipt().date() <= self.__dim]
             for cw in windows:
-                periods = self.__splitPeriods(cw)
-                ex = Example(self.__currentDay)
-                for i in range(0, currentPeriodIndex):
-                    period = periods[i]
-                    # Ci troviamo prima del periodo corrente - calcolare RFM globale delle settimane precedenti.
-                    if i != currentPeriodIndex:
-                        rfm = self.__calculateRFM(period)
-                        ex.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
-                    # Altrimenti calcola RFM del current day
-                    else:
-                        rfm = self.__calculateRFM(period, end=currentDayIndex)
-                        ex.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
-                # Inserisce nuovo esempio nel dizionario
-                self.__examples.insertExample(cw.getKMember(), ex)
-        except TypeError:
-            pass
-
-            # CASO 2:
-            # Generazione esempi per tutti quei clienti che hanno effettuato acquisti nel current day
-
-        try:
-            # Lista di customer window dei clienti che in current day hanno effettuato acquisti
-            windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
-            for cw in windows:
-                print(cw.getKMember())
                 periods = self.__splitPeriods(cw)
                 ex = Example(self.__currentDay)
                 i = 0
@@ -132,39 +110,91 @@ class DataWindow:
                     period = periods[i]
                     # Ci troviamo prima del periodo corrente - calcolare RFM globale delle settimane precedenti.
                     if i != currentPeriodIndex:
+                        # Prova a calcolare RFM GLOBALE per la settimana precedente
                         try:
                             rfm = self.__calculateRFM(period)
-                        except IndexError:
-                            rfm = [0, 0, 0]
-                        ex.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
+                        # Caso in cui la settimana prima ha tutti i day vuoti (no ricevute).
+                        except EmptyRfmException:
+                            # Settiamo un RFM a 0. La Recency sarà massima.
+                            rfm = (Rfm(self.__dim, 0, 0))
+                        # Aggiunge rfm all'esempio
+                        ex.addRfm()
+                    # Altrimenti calcola RFM relativo al current day
+                    else:
+                        # Prova a calcolare RFM fino al currentDay all'interno del periodo corrente i=currentPeriodIndex
+                        try:
+                            rfm = self.__calculateRFM(period, end=currentDayIndex)
+                        # Caso in cui non ci sono acquisti. Genera RFM a 0. La Recency sarà comunque corretta.
+                        except EmptyRfmException:
+                            rfm = Rfm(self.__currentDay - cw.getLastReceipt().date(), 0, 0)
+                        ex.addRfm(rfm)
+                    i += 1
+                # Inserisce l' esempio nel dizionario. Esso è formato dai k (con k<=periods) RFM calcolati.
+                self.__examples.insertExample(cw.getKMember(), ex)
+        except TypeError:
+            pass
+
+        # CASO 2:
+        # Generazione esempi per tutti quei clienti che hanno effettuato acquisti nel current day
+        # [],[],[],[],[],[],[]     |     [],[],[],[],[],[],[]     |      [],[],[r6],[r2,r3,r4,r5],[],[],[]     |      [],[],[],[],[],[],[]
+
+        try:
+            # Lista di customer window dei clienti che in current day hanno effettuato acquisti
+            windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
+            for cw in windows:
+                periods = self.__splitPeriods(cw)
+                ex = Example(self.__currentDay)
+                # i = currentPeriodIndex se prima del giorno attuale il cliente non ha effettuato acquisti.
+                # 0 (primo periodo) altrimenti
+                flag = True
+                i = 0
+                while flag and i < currentPeriodIndex:
+                    period = periods[i]
+                    if period == [None]*self.__dim:
+                        flag = False
+                    i += 1
+                while i <= currentPeriodIndex:
+                    period = periods[i]
+                    # Ci troviamo prima del periodo corrente - calcolare RFM globale delle settimane precedenti.
+                    if i != currentPeriodIndex:
+                        try:
+                            rfm = self.__calculateRFM(period)
+                        except EmptyRfmException:
+                            # Settiamo un RFM a 0. La Recency sarà massima.
+                            rfm = (Rfm(self.__dim, 0, 0))
+                        # Aggiunge Rfm all'esempio
+                        ex.addRfm(rfm)
+
                     # Ci troviamo nel periodo attuale. Calcoliamo RFM considerando il caso vi siano più di una ricevuta
                     # nella stessa giornata. In tal caso costruiamo un ExampleSequence che immagazzina tutti gli esempi
                     # che devono essere etichettati subito dopo la generazione.
                     else:
-                        receipt = period[currentDayIndex].getReceiptsOfDay()[0]
-                        if len(period[currentDayIndex].getReceiptsOfDay()) > 1:
-                            seq = ExampleSequence()
-                            exampletoWrite = Example(self.__currentDay)
-                            try:
-                                rfm = self.__calculateRFM(period, end=currentDayIndex - 1)
-                            except IndexError:
-                                rfm = [0, 1, receipt.getQAmount()]
-                            exampletoWrite.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
-                            seq.appendExample(exampletoWrite)
-                            for i in range(1, len(period[currentDayIndex].getReceiptsOfDay()) - 2):
-                                exampletoWrite = Example(self.__currentDay)
-                                receipt = period[currentDayIndex].getReceiptsOfDay()[i]
-                                rfm = [0, rfm[1] + 1, rfm[2] + receipt.getQAmount()]
-                                exampletoWrite.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
-                                seq.appendExample(exampletoWrite)
-                            seq.record(False, self.__currentDay, writer)
-                        # Infine generiamo l'esempio per l'ultimo acquisto che va nel dizionario ExampleDictionary
+                        # Prova a calcolare RFM fino al giorno prima del currentDay all'interno del periodo corrente
+                        # i=currentPeriodIndex
                         try:
-                            rfm = self.__calculateRFM(period, end=currentDayIndex)
-                        except IndexError:
-                            rfm = [0, 1, receipt.getQAmount()]
-                        ex.addExample(Rfm(rfm[0], rfm[1], rfm[2]))
-                    i = i + 1
+                            rfm = self.__calculateRFM(period, end=currentDayIndex - 1)
+                        # Caso in cui non ci sono acquisti. Genera RFM a 0. La Recency sarà comunque corretta.
+                        except EmptyRfmException:
+                            rfm = Rfm((self.__currentDay - cw.getLastReceipt().date()).days, 0, 0)
+
+                        receipts = period[currentDayIndex].getReceiptsOfDay()
+                        newRfm = Rfm(rfm.getRecency() + 1, rfm.getFrequency() + 1,
+                                  rfm.getMonetary() + receipts[0].getQAmount())
+                        rfm = newRfm
+                        if len(receipts) > 1:
+                            seq = ExampleSequence()
+                            toWrite = ex.copy()
+                            toWrite.addRfm(rfm)
+                            seq.appendExample(toWrite)
+                            for receipt in [receipt for receipt in receipts[1: -1]]:
+                                rfm = Rfm(0, rfm.getFrequency() + 1, rfm.getMonetary() + receipt.getQAmount())
+                                toWrite = ex.copy()
+                                toWrite.addRfm(rfm)
+                                seq.appendExample(toWrite)
+                            seq.record(False, self.__currentDay, writer)
+                        else:
+                            ex.addRfm(rfm)
+                    i += 1
                 self.__examples.insertExample(cw.getKMember(), ex)
         except TypeError:
             pass
@@ -177,8 +207,6 @@ class DataWindow:
         return [list(islice(iter_days, elem)) for elem in length_to_split]
 
     def __calculateRFM(self, period: list[Day], start=0, end=__dim - 1):
-        if end not in range(0, self.__dim - 1):
-            raise IndexError
         recency = 0
         frequency = 0
         monetary = 0
@@ -192,11 +220,6 @@ class DataWindow:
             except AttributeError:
                 pass
             i += 1
-        return [recency, frequency, monetary]
-
-
-"""
- iter_days = iter(days)
-            length_to_split = [self.__dim] * self.__periods
-            periods = [list(islice(iter_days, elem))
-                       for elem in length_to_split]"""
+        if frequency == 0:
+            raise EmptyRfmException
+        return Rfm(recency, frequency, monetary)

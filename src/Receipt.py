@@ -3,7 +3,7 @@
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe Receipt modella la singola entry della tabella Receipt del DB.
-Essa contiente tutti i campi contenuti nella tabella come attributi e relativi metodi get e set.
+                 Essa contiente tutti i campi contenuti nella tabella come attributi e relativi metodi get e set.
 """
 
 class Receipt:
