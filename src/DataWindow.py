@@ -179,10 +179,11 @@ class DataWindow:
                                 toWrite = ex.copy()
                                 toWrite.addRfm(rfm)
                                 seq.appendExample(toWrite)
-                            seq.record(False, self.__currentDay, writer)
+                            seq.record(False, self.__currentDay, writer, cw.getKMember())
+                            rfm = Rfm(0, rfm.getFrequency() + 1, rfm.getMonetary() + receipts[-1].getQAmount())
                         else:
                             rfm = self.__calculateRFM(period, cw, end=currentDayIndex)
-                            ex.addRfm(rfm)
+                        ex.addRfm(rfm)
                     i += 1
                 self.__examples.insertExample(cw.getKMember(), ex)
         except TypeError:
@@ -241,3 +242,26 @@ class DataWindow:
             else:
                 i += 1
         return i
+
+    def generateLabels(self, stream):
+        try:
+            windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
+            for cw in windows:
+                try:
+                    self.__examples.recordLabeledExample(cw.getKMember(), False, self.__currentDay, stream)
+                    self.__examples.delete(cw.getKMember())
+                except KeyError:
+                    pass
+        except TypeError:
+            pass
+
+        try:
+            windows = [cw for cw in self.__window.values() if (self.__currentDay - cw.getLastReceipt().date()).days > self.__dim]
+            for cw in windows:
+                try:
+                    self.__examples.recordLabeledExample(cw.getKMember(), True, self.__currentDay, stream)
+                    self.__examples.delete(cw.getKMember())
+                except KeyError:
+                    pass
+        except TypeError:
+            pass
