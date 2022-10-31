@@ -47,4 +47,4 @@ class StreamBuilder:
             print(currentDay, lastDay)
 
 
-StreamBuilder("localhost", "root", "Cicciopazzo98", "brazilian_churn_retail_db", 7, 4, "stream.csv")
+StreamBuilder("localhost", "root", "Cicciopazzo98", "churn_retail_db", 30, 3, "stream.csv")
