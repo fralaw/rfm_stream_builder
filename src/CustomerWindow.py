@@ -6,8 +6,8 @@ from Day import Day
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe CustomerWindow modella la finestra temporale di un singolo cliente, conservando
-le giornate in cui ha acquistato in una lista a dimensione fissa, la data dell'ultimo acquisto e l'informazione
-sul cliente.
+                 le giornate in cui ha acquistato in una lista a dimensione fissa, la data dell'ultimo acquisto e 
+                 l'informazione sul cliente.
 """
 
 
@@ -17,6 +17,7 @@ class CustomerWindow:
     # Metodo costruttore
     def __init__(self, customer: str, dim: int):
         self.__lastReceipt: dt.datetime = None
+        self.__differenceBetweenTwoLastPurchases = 0
         self.__K_Member = customer
         self.__dayList = [None] * dim
 
@@ -32,14 +33,22 @@ class CustomerWindow:
     def getListOfDays(self):
         return self.__dayList
 
+    def getDifferenceBetweenTwoLastPurchases(self):
+        return self.__differenceBetweenTwoLastPurchases
+
     # Metodo che inserisce un giorno all'interno della finestra in posizione index, aggiornando la data di ultimo
     # acquisto
     def setDay(self, day: Day, lastReceiptTime: dt.datetime, index: int = len(__dayList) - 1):
         self.__dayList[index] = day
+        try:
+            self.__differenceBetweenTwoLastPurchases = (lastReceiptTime.date() - self.__lastReceipt.date()).days
+        except AttributeError:
+            self.__differenceBetweenTwoLastPurchases = 0
         self.__lastReceipt = lastReceiptTime
 
+
     # Metodo che "shifta" la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine
-    def deleteLatestDay(self):
+    def deleteFurthestDay(self):
         self.__dayList.pop(0)
         self.__dayList.append(None)
 

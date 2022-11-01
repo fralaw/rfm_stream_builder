@@ -5,7 +5,7 @@ from Receipt import Receipt
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe Day modella l'insieme di ricevute di un dato cliente raccolte in una specifica giornata.
-Possiede un metodo costruttore con argomento opzionale, un metodo di set (addReceipt) e un metodo di get
+                 Possiede un metodo costruttore con argomento opzionale, un metodo di set (addReceipt) e un metodo di get
 """
 
 

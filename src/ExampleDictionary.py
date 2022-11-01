@@ -42,7 +42,7 @@ class ExampleDictionary:
 
     # Metodo per etichettare l'esempio.
     def recordLabeledExample(self, customer: str, label: bool, date, stream):
-        self.__examples[customer].record(label, date, stream)
+        self.__examples[customer].record(label, date, stream, customer)
 
     # Metodo di override per la stampa
     def __str__(self):

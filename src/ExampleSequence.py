@@ -23,7 +23,7 @@ class ExampleSequence:
         self.__examples.append(ex)
 
     # Metodo record per etichettare e inserire nello stream.
-    def record(self, label: bool, date, stream):
-        examplesList = [[str(ex.getDesc()), date, str(label)] for ex in self.__examples]
+    def record(self, label: bool, date, stream, customer):
+        examplesList = [[str(ex.getDesc()), date, str(label), customer] for ex in self.__examples]
         stream.writerows(examplesList)
         self.__examples = []

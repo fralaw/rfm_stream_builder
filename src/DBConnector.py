@@ -7,7 +7,8 @@ import datetime as dt
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 1.0
 // Description : La classe DBConnector modella la connessione al DB, istanziandola tramite costruttore e chiudendola
-tramite metodo "closeConnection(). Fornisce un metodo che effettua la query sulla tabella Receipt del DB.
+                 tramite metodo "closeConnection(). Fornisce un metodo che effettua la query sulla tabella Receipt 
+                 del DB.
 """
 
 
@@ -15,7 +16,7 @@ class DBConnector:
     __mydb = mysql.connector.MySQLConnection()
 
     # Costruttore
-    def __init__(self, host="localhost", username="root", password="", database="churn_retail_db"):
+    def __init__(self, host="localhost", username="root", password="", database="brazilian_churn_retail_db"):
         self.__host = host
         self.__username = username
         self.__password = password
