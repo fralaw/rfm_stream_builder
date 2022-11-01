@@ -16,7 +16,7 @@ class DBConnector:
     __mydb = mysql.connector.MySQLConnection()
 
     # Costruttore
-    def __init__(self, host="localhost", username="root", password="", database="churn_retail_db"):
+    def __init__(self, host="localhost", username="root", password="", database="brazilian_churn_retail_db"):
         self.__host = host
         self.__username = username
         self.__password = password

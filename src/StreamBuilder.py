@@ -26,7 +26,7 @@ class StreamBuilder:
         else:
             lastDay = end
 
-        file = open(streamPath, "w")
+        file = open(streamPath, "w", newline="")
         stream = csv.writer(file)
 
         for i in range(0, churnDim * periods):
@@ -47,4 +47,4 @@ class StreamBuilder:
             print(currentDay, lastDay)
 
 
-StreamBuilder("localhost", "root", "Cicciopazzo98", "churn_retail_db", 7, 4, "stream.csv")
+StreamBuilder("localhost", "root", "", "brazilian_churn_retail_db", 7, 4, "stream.csv")
