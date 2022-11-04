@@ -4,9 +4,10 @@
 // Version     : 1.0
 // Description : Classe che modella gli esempi. E' formata da una descrizione il quale è lista di Rfm
 """
+import operator
 
 from Rfm import Rfm
-
+import operator
 
 class Example:
     # Attributi privati:
@@ -32,6 +33,10 @@ class Example:
 
     # Metodo add che "appende" un Rfm alla lista di RFM
     def addRfm(self, desc: Rfm):
+        self.__desc.append(desc)
+
+    def replaceLastRfm(self, desc: Rfm):
+        self.__desc.pop(-1)
         self.__desc.append(desc)
 
     # Metodo get per ritornare la lista di Rfm
