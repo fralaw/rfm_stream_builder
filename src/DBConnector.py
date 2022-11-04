@@ -62,7 +62,7 @@ class DBConnector:
     """
     def extractFirstDay(self):
         cursor = self.__mydb.cursor()
-        cursor.execute("SELECT MIN(T_Receipt) FROM Receipts")
+        cursor.execute("SELECT DATE(MIN(T_Receipt)) FROM Receipts")
         rows = cursor.fetchall()
         return rows[0][0]
 
@@ -72,6 +72,6 @@ class DBConnector:
     """
     def extractLastDay(self):
         cursor = self.__mydb.cursor()
-        cursor.execute("SELECT MAX(T_Receipt) FROM Receipts")
+        cursor.execute("SELECT DATE(MAX(T_Receipt)) FROM Receipts")
         rows = cursor.fetchall()
         return rows[0][0]
