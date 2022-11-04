@@ -105,7 +105,7 @@ class DataWindow:
             # Lista di customer window dei clienti che in current day hanno effettuato acquisti
             windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
             for cw in windows:
-                rfm = Rfm()
+                rfm = Rfm(0, 0, 0)
                 periods = self.__splitPeriods(cw)
                 ex = Example(self.__currentDay)
                 for period in periods:
@@ -119,7 +119,7 @@ class DataWindow:
                 if len(receipts) > 1:
                     seq = ExampleSequence()
                     for receipt in receipts.reverse()[0:len(receipts) - 1]:
-                        rfm = Rfm(rfm.getRecency(), rfm.getFrequency()-1, rfm.getMonetary() - receipt.getQAmount())
+                        rfm = Rfm(rfm.getRecency(), rfm.getFrequency() - 1, rfm.getMonetary() - receipt.getQAmount())
                         ex.replaceLastRfm(rfm)
                         seq.appendExample(ex)
         except TypeError:
@@ -139,7 +139,7 @@ class DataWindow:
         for day in period:
             try:
                 receipts = day.getReceiptsOfDay()
-                recency = self.__periodDim - period.index(day)
+                recency = self.__periodDim - period.index(day) - 1
                 frequency += len(receipts)
                 monetary += np.sum([receipt.getQAmount() for receipt in receipts])
             except AttributeError:
@@ -165,6 +165,7 @@ class DataWindow:
                 try:
                     self.__examples.recordLabeledExample(cw.getKMember(), True, self.__currentDay, stream)
                     self.__examples.delete(cw.getKMember())
+                    del self.__window[cw.getKMember()]
                 except KeyError:
                     pass
         except TypeError:
