@@ -17,16 +17,16 @@ from Rfm import Rfm
 
 
 class DataWindow:
-    def __init__(self, dim: int, periods: int):
-        self.__dim: int = dim
+    def __init__(self, periodDim: int, periods: int, churnDim: int):
+        self.__churnDim = churnDim
+        self.__periodDim: int = periodDim
         self.__periods: int = periods
+        self.__windowDim: int = max(periodDim * periods, churnDim)
         self.__currentDay: dt.date = None
         self.__examples: ExampleDictionary = ExampleDictionary()
         self.__window: dict = {}
 
-    def set(self, data: list[tuple], dateToSet: dt.date, index: int = None):
-        if index is None:
-            index = (self.__dim * self.__periods) - 1
+    def set(self, data: list[tuple], dateToSet: dt.date):
         self.__currentDay = dateToSet
         # Lista che contiene le liste di ricevute di ciascun cliente
         receipts = []
@@ -39,19 +39,18 @@ class DataWindow:
             lastPurchase = row[5]
 
             # Scandisce la lista di tuple
-            for i in range(1, len(data)):
-                row = data[i]
+            for row in data[1:]:
                 # Confronta l'attuale 'K_Member' con l'old_Member, cioè se siamo ancora sulle ricevute di old cliente
                 if row[1] != oldMember:
                     # Costruisce il Day passando come oggetto la lista di receipts
                     day = Day(receipts)
                     try:
                         # Prova ad accedere alla customer window e settare il day in posizione index
-                        self.__window[oldMember].setDay(day, lastPurchase, index)
+                        self.__window[oldMember].setDay(day, lastPurchase)
                     except KeyError:
                         # Altrimenti inizializza
-                        cw = CustomerWindow(oldMember, self.__dim * self.__periods)
-                        cw.setDay(day, lastPurchase, index)
+                        cw = CustomerWindow(oldMember, self.__windowDim)
+                        cw.setDay(day, lastPurchase)
                         self.__window[oldMember] = cw
                     # Svuotiamo la lista di receipts
                     receipts = [
@@ -67,10 +66,10 @@ class DataWindow:
             # L'ultimo cliente non sarà mai precedente di nessuno, viene aggiunto a prescindere
             day = Day(receipts)
             try:
-                self.__window[row[1]].setDay(day, lastPurchase, index)
+                self.__window[row[1]].setDay(day, lastPurchase)
             except KeyError:
-                cw = CustomerWindow(row[1], (self.__dim * self.__periods))
-                cw.setDay(day, lastPurchase, index)
+                cw = CustomerWindow(row[1], self.__windowDim)
+                cw.setDay(day, lastPurchase)
                 self.__window[row[1]] = cw
         except IndexError:
             pass
@@ -88,9 +87,9 @@ class DataWindow:
     def generateExamples(self, index, writer):
         # Calcolo degli indici:
         # currentPeriodIndex = indice del periodo in cui è stato effettuato l'acquisto
-        currentPeriodIndex = int(index / self.__dim)
+        currentPeriodIndex = int(index / self.__periodDim)
         # currentDayIndex = posizione nel periodo
-        currentDayIndex = index - (currentPeriodIndex * self.__dim)
+        currentDayIndex = index - (currentPeriodIndex * self.__periodDim)
 
         # [],[r1],[],[],[],[],[]     |     [],[],[churn],[],[],[],[r5]     |      [],[],[],[r2],[],[],[]     |      [],[],[],[],[],[],[]
         # CASO 1:
@@ -100,7 +99,7 @@ class DataWindow:
         # Lista di customer window dei clienti che in current day non hanno effettuato acquisti
         try:
             windows = [cw for cw in self.__window.values()
-                       if 1 <= (self.__currentDay - cw.getLastReceipt().date()).days <= self.__dim]
+                       if 1 <= (self.__currentDay - cw.getLastReceipt().date()).days <= self.__periodDim]
             for cw in windows:
                 periods = self.__splitPeriods(cw)
                 ex = Example(self.__currentDay)
@@ -115,7 +114,7 @@ class DataWindow:
                         # Caso in cui la settimana prima ha tutti i day vuoti (no ricevute).
                         except EmptyRfmException:
                             # Settiamo un RFM a 0. La Recency sarà massima.
-                            rfm = (Rfm(self.__dim, 0, 0))
+                            rfm = (Rfm(self.__periodDim, 0, 0))
                         # Aggiunge rfm all'esempio
                         ex.addRfm(rfm)
                     # Altrimenti calcola RFM relativo al current day
@@ -132,7 +131,6 @@ class DataWindow:
                 self.__examples.insertExample(cw.getKMember(), ex)
         except TypeError:
             pass
-
 
         # CASO 2:
         # Generazione esempi per tutti quei clienti che hanno effettuato acquisti nel current day
@@ -152,7 +150,7 @@ class DataWindow:
                             rfm = self.__calculateRFM(period, cw)
                         except EmptyRfmException:
                             # Settiamo un RFM a 0. La Recency sarà massima.
-                            rfm = (Rfm(self.__dim, 0, 0))
+                            rfm = (Rfm(self.__periodDim, 0, 0))
                         # Aggiunge Rfm all'esempio
                         ex.addRfm(rfm)
 
@@ -174,7 +172,7 @@ class DataWindow:
                             toWrite = ex.copy()
                             toWrite.addRfm(rfm)
                             seq.appendExample(toWrite)
-                            for receipt in [receipt for receipt in receipts[1: len(receipts)-1]]:
+                            for receipt in [receipt for receipt in receipts[1: len(receipts) - 1]]:
                                 rfm = Rfm(0, rfm.getFrequency() + 1, rfm.getMonetary() + receipt.getQAmount())
                                 toWrite = ex.copy()
                                 toWrite.addRfm(rfm)
@@ -192,7 +190,7 @@ class DataWindow:
     def __splitPeriods(self, cw: CustomerWindow):
         days = cw.getListOfDays()
         iter_days = iter(days)
-        length_to_split = [self.__dim] * self.__periods
+        length_to_split = [self.__periodDim] * self.__periods
         # Dividiamo la window in periodi
         return [list(islice(iter_days, elem)) for elem in length_to_split]
 
@@ -201,7 +199,7 @@ class DataWindow:
         frequency = 0
         monetary = 0
         if end is None:
-            end = self.__dim-1
+            end = self.__periodDim - 1
             i = start
             while i <= end:
                 try:
@@ -214,7 +212,8 @@ class DataWindow:
                 i += 1
         else:
             if cw.getLastReceipt().date() == self.__currentDay:
-                recency = cw.getDifferenceBetweenTwoLastPurchases() + (self.__currentDay - cw.getLastReceipt().date()).days
+                recency = cw.getDifferenceBetweenTwoLastPurchases() + (
+                            self.__currentDay - cw.getLastReceipt().date()).days
             else:
                 recency = (self.__currentDay - cw.getLastReceipt().date()).days
             frequency = 0
@@ -237,7 +236,7 @@ class DataWindow:
         i = 0
         while flag and i <= maxPeriod:
             period = periods[i]
-            if period != [None] * self.__dim:
+            if period != [None] * self.__periodDim:
                 flag = False
             else:
                 i += 1
@@ -256,7 +255,8 @@ class DataWindow:
             pass
 
         try:
-            windows = [cw for cw in self.__window.values() if (self.__currentDay - cw.getLastReceipt().date()).days > self.__dim]
+            windows = [cw for cw in self.__window.values() if
+                       (self.__currentDay - cw.getLastReceipt().date()).days > self.__periodDim]
             for cw in windows:
                 try:
                     self.__examples.recordLabeledExample(cw.getKMember(), True, self.__currentDay, stream)

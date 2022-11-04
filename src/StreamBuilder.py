@@ -8,9 +8,10 @@ from DataWindow import DataWindow
 class StreamBuilder:
 
     def __init__(self, host: str, username: str, password: str, databaseName: str,
-                 churnDim: int, periods: int, streamPath: str, start: dt.date = None, end: dt.date = None):
+                 churnDim: int, periodDim: int, periods: int, streamPath: str, start: dt.date = None,
+                 end: dt.date = None):
         self.__mydb = DBConnector(host, username, password, databaseName)
-        self.__window: DataWindow = DataWindow(churnDim, periods)
+        self.__window: DataWindow = DataWindow(periodDim, periods, churnDim)
         self.__generateStream(streamPath, start, end, churnDim, periods)
 
     def __generateStream(self, streamPath: str, start: dt.date, end: dt.date, churnDim: int, periods: int):
@@ -29,22 +30,15 @@ class StreamBuilder:
         file = open(streamPath, "w", newline="")
         stream = csv.writer(file)
 
-        for i in range(0, churnDim * periods):
-            dataOfDay = self.__mydb.extractReceipts(currentDay)
-            self.__window.set(dataOfDay, currentDay, i)
-            self.__window.generateLabels(stream)
-            self.__window.generateExamples(i, stream)
-            currentDay += dt.timedelta(days=1)
-            print(currentDay, lastDay)
         while currentDay != lastDay:
+            print(currentDay, lastDay)
             dataOfDay = self.__mydb.extractReceipts(currentDay)
             self.__window.deleteFurthestDay()
             self.__window.set(dataOfDay, currentDay)
             self.__window.clean()
-            self.__window.generateLabels(stream)
-            self.__window.generateExamples(churnDim * periods - 1, stream)
+            # self.__window.generateLabels(stream)
+            # self.__window.generateExamples(stream)
             currentDay += dt.timedelta(days=1)
-            print(currentDay, lastDay)
 
 
-StreamBuilder("localhost", "root", "", "brazilian_churn_retail_db", 7, 4, "stream.csv")
+StreamBuilder("localhost", "root", "", "test_db", 115, 30, 3, "stream.csv")

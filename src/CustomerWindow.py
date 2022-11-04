@@ -19,6 +19,7 @@ class CustomerWindow:
         self.__lastReceipt: dt.datetime = None
         self.__differenceBetweenTwoLastPurchases = 0
         self.__K_Member = customer
+        self.__dim = dim
         self.__dayList = [None] * dim
 
     # Get del codice cliente
@@ -38,14 +39,13 @@ class CustomerWindow:
 
     # Metodo che inserisce un giorno all'interno della finestra in posizione index, aggiornando la data di ultimo
     # acquisto
-    def setDay(self, day: Day, lastReceiptTime: dt.datetime, index: int = len(__dayList) - 1):
-        self.__dayList[index] = day
+    def setDay(self, day: Day, lastReceiptTime: dt.datetime):
+        self.__dayList[self.__dim - 1] = day
         try:
             self.__differenceBetweenTwoLastPurchases = (lastReceiptTime.date() - self.__lastReceipt.date()).days
         except AttributeError:
             self.__differenceBetweenTwoLastPurchases = 0
         self.__lastReceipt = lastReceiptTime
-
 
     # Metodo che "shifta" la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine
     def deleteFurthestDay(self):
@@ -54,9 +54,10 @@ class CustomerWindow:
 
     # Metodo che verifica se l'utente non ha acquistato nemmeno un giorno nella finestra temporale
     def isEmpty(self):
-        return self.__dayList == [None]*len(self.__dayList)
+        return self.__dayList == [None] * len(self.__dayList)
 
     def __str__(self):
         return "Customer: " + self.__K_Member + "\n" \
-                "Last Receipt: " + str(self.__lastReceipt) + "\n" \
-                "Days: " + str(self.__dayList)
+                                                "Last Receipt: " + str(self.__lastReceipt) + "\n" \
+                                                                                             "Days: " + str(
+            self.__dayList)
