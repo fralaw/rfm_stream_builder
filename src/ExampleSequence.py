@@ -2,7 +2,7 @@
 // Name        : ExampleSequence.py
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 3.0
-// Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di Examples
+// Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di Examples.
 """
 
 from Example import Example
@@ -15,6 +15,7 @@ class ExampleSequence:
 
     """ 
         Metodo costruttore. Inizializza la lista di esempi come lista vuota.
+        examples è una collezione di esempi che verranno mantenuti nell'Example Sequence.
     """
     def __init__(self):
         self.__examples = []
