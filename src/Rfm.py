@@ -17,7 +17,6 @@ class Rfm:
             - Frequency: con quale frequenza un cliente ha effettuato transazioni o interagito;
             - Monetary: questo fattore riflette quanto un cliente ha speso.
     """
-
     def __init__(self, recency, frequency, monetary):
         self.__recency = recency
         self.__frequency = frequency
@@ -27,7 +26,6 @@ class Rfm:
         Metodo getter attributo Recency.
         Return di un tipo int.
     """
-
     def getRecency(self):
         return self.__recency
 
@@ -35,7 +33,6 @@ class Rfm:
         Metodo getter attributo Frequency.
         Return di un tipo int.
     """
-
     def getFrequency(self):
         return self.__frequency
 
@@ -43,7 +40,6 @@ class Rfm:
         Metodo getter attributo Monetary.
         Return di un tipo float.
     """
-
     def getMonetary(self):
         return self.__monetary
 
@@ -51,7 +47,6 @@ class Rfm:
         Override del metodo __str__.
         Return di un tipo string
     """
-
     def __str__(self):
         return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
 
@@ -60,6 +55,5 @@ class Rfm:
          Permette di stampare il contenuto.
          Return di un tipo string
      """
-
     def __repr__(self):
         return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
