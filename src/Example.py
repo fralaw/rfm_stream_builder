@@ -1,13 +1,13 @@
 """
 // Name        : Example.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 1.0
-// Description : Classe che modella gli esempi. E' formata da una descrizione il quale è lista di Rfm
+// Version     : 3.0
+// Description : Classe che modella gli esempi. È formata da una descrizione il quale è lista di Rfm
 """
-import operator
 
 from Rfm import Rfm
 import operator
+
 
 class Example:
     # Attributi privati:
