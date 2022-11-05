@@ -1,5 +1,3 @@
-import mysql.connector
-
 """
 // Name        : DBConnector.py
 // Author      : Andrea Brunetta, Francesco Luce
@@ -10,6 +8,8 @@ import mysql.connector
                  MySQL Connector Python è scritto in Python ed è autosufficiente per eseguire query di database 
                  tramite Python. È un driver ufficiale supportato da Oracle per funzionare con MySQL e Python. 
 """
+
+import mysql.connector
 
 
 class DBConnector:
@@ -22,7 +22,7 @@ class DBConnector:
             - username: Il nome utente che si utilizza per lavorare con MySQL. 
                         Il nome utente predefinito per il database MySQL è 'root';
             - password: La password viene fornita dall'utente al momento dell'installazione del server MySQL. 
-                        Se si usa root, non c'è bisogno della password.;
+                        Se si usa root, non c'è bisogno della password;
             - database: Il nome del database a cui si desidera connettersi ed eseguire le operazioni.
         Il costruttore setta gli attributi della classe con i parametri ricevuti in input.
     """
@@ -45,7 +45,7 @@ class DBConnector:
         self.__mydb.close()
 
     """
-        Metodo che effettua la query estraendo le ricevute del giorno
+        Metodo che effettua la query estraendo le ricevute del giorno.
         I metodi execute() eseguono la query SQL e restituiscono il risultato.
         cursor() di un oggetto MySQLConnection per creare un oggetto cursore per eseguire varie operazioni SQL.
     """
