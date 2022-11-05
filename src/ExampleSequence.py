@@ -27,6 +27,8 @@ class ExampleSequence:
 
     """
         Metodo record per etichettare e mettere nello stream gli esempi.
+        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) la data e lo stream su cui
+        scriverò la row di exampleList: lista costruita con le list comprehension.
     """
     def record(self, label: bool, date, stream, customer):
         examplesList = [[str(ex.getDesc()), date, str(label), customer] for ex in self.__examples]
