@@ -12,7 +12,7 @@
 
 class Rfm:
     """
-        Metodo costruttore. Inizializza gli attributi privati con i valori passati in input.
+        Metodo costruttore. Inizializza gli attributi privati della classe con i valori passati in input.
             - Recency: quanto tempo è trascorso dall'ultima attività o transazione;
             - Frequency: con quale frequenza un cliente ha effettuato transazioni o interagito;
             - Monetary: questo fattore riflette quanto un cliente ha speso.
@@ -44,14 +44,14 @@ class Rfm:
         return self.__monetary
 
     """
-        Overload del metodo __str__.
+        Override del metodo __str__.
         Return di un tipo string
     """
     def __str__(self):
         return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
 
     """
-         Overload del metodo __repr__.
+         Override del metodo __repr__.
          Permette di stampare il contenuto.
          Return di un tipo string
      """
