@@ -71,7 +71,7 @@ class Receipt:
     """
          Override del metodo __repr__.
          Permette di stampare il contenuto.
-         Return di un tipo string
+         Return di un tipo string.
      """
     def __repr__(self):
         return "K_Receipt: " + str(self.__K_Receipt) + "\n" \

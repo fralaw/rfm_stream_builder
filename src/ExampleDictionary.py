@@ -27,7 +27,7 @@ class ExampleDictionary:
         return self.__examples
 
     """
-        Metodo che verifica l'esistenza della chiave passata come parametro nella lista delle chiavi
+        Metodo che verifica l'esistenza della chiave passata come parametro nella lista delle chiavi.
     """
     def containsKey(self, customer: str):
         if customer in self.__examples.keys():
@@ -36,7 +36,7 @@ class ExampleDictionary:
             return False
 
     """
-        Metodo per inserire un esempio nell' ExampleSequence all'interno del dizionario con chiave customer
+        Metodo per inserire un esempio nell' ExampleSequence all'interno del dizionario con chiave customer.
     """
     def insertExample(self, customer: str, ex: Example):
         if customer not in self.__examples:
@@ -61,7 +61,7 @@ class ExampleDictionary:
 
     """
         Override del metodo __str__.
-        Return di un tipo string
+        Return di un tipo string.
     """
     def __str__(self):
         return str(self.__examples.items())

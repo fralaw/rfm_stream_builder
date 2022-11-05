@@ -43,7 +43,7 @@ class CustomerWindow:
 
     """
         Metodo getter dayList. 
-        Return di un tipo lista (di giorni della finestra temporale)
+        Return di un tipo lista (di giorni della finestra temporale).
     """
     def getListOfDays(self):
         return self.__dayList
@@ -53,7 +53,7 @@ class CustomerWindow:
 
     """
         Metodo che inserisce un giorno all'interno della finestra in posizione index
-        aggiornando la data di ultimo acquisto
+        aggiornando la data di ultimo acquisto.
     """
     def setDay(self, day: Day, lastReceiptTime: dt.datetime):
         self.__dayList[self.__dim - 1] = day
@@ -64,21 +64,21 @@ class CustomerWindow:
         self.__lastReceipt = lastReceiptTime
 
     """
-        Metodo che 'shifta' la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine
+        Metodo che 'shifta' la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine.
     """
     def deleteFurthestDay(self):
         self.__dayList.pop(0)
         self.__dayList.append(None)
 
     """
-        Metodo che verifica se l'utente non ha acquistato nemmeno un giorno nella finestra temporale
+        Metodo che verifica se l'utente non ha acquistato nemmeno un giorno nella finestra temporale.
     """
     def isEmpty(self):
         return self.__dayList == [None] * len(self.__dayList)
 
     """
         Override del metodo __str__.
-        Return di un tipo string
+        Return di un tipo string.
     """
     def __str__(self):
         return "Customer: " + self.__K_Member + "\n" \

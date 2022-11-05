@@ -32,7 +32,7 @@ class Day:
         self.__receipts.append(receipt)
 
     """
-        Metodo getter per receipts
+        Metodo getter per receipts.
         Return di un tipo lista di Receipt.
     """
     def getReceiptsOfDay(self):
@@ -40,7 +40,7 @@ class Day:
 
     """
         Override del metodo __str__.
-        Return di un tipo string
+        Return di un tipo string.
     """
     def __str__(self):
         receiptsToStr = str()
