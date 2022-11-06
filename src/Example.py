@@ -6,6 +6,7 @@
 """
 
 from Rfm import Rfm
+import datetime as dt
 
 
 class Example:
@@ -19,6 +20,7 @@ class Example:
     """
     def __init__(self, startTimeStamp):
         self.__startTimeStamp = startTimeStamp
+        self.__labelTimeStamp = None
         self.__desc = []
 
     """
@@ -47,3 +49,26 @@ class Example:
     """
     def getDesc(self):
         return self.__desc
+
+    """
+        Metodo getter per labelTimeStamp.
+        Return di un tipo datetime.
+    """
+    def getLabelTimestamp(self):
+        return self.__labelTimeStamp
+
+    """
+        Metodo setter per labelTimeStamp.
+    """
+    def setLabelTimestamp(self, timestamp: dt.datetime):
+        self.__labelTimeStamp = timestamp
+
+    """
+           Metodo che effettua la copia. 
+    """
+    def copy(self):
+        ex = Example(None)
+        ex.__desc = self.__desc.copy()
+        ex.__startTimeStamp = self.__startTimeStamp
+        ex.__labelTimeStamp = self.__labelTimeStamp
+        return ex

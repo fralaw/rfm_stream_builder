@@ -6,6 +6,7 @@
 """
 
 from Example import Example
+import datetime as dt
 
 
 class ExampleSequence:
@@ -19,17 +20,24 @@ class ExampleSequence:
         self.__examples = []
 
     """
-    Metodo append per inserire nuovi esempi alla lista di esempi.
+        Metodo append per inserire nuovi esempi alla lista di esempi.
     """
     def appendExample(self, ex: Example):
         self.__examples.append(ex)
 
     """
+        Metodo setter per il labelTimeStamp degli examples in ExampleSequence
+    """
+    def setLabelTimestamp(self, timestamp: dt.datetime):
+        for example in self.__examples:
+            example.setLabelTimestamp(timestamp)
+
+    """
         Metodo record per etichettare e mettere nello stream gli esempi.
-        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) la data e lo stream su cui
+        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e lo stream su cui
         scriverò la row di exampleList: lista costruita con le list comprehension.
     """
-    def record(self, label: bool, date, stream, customer):
-        examplesList = [[str(ex.getDesc()), date, str(label), customer] for ex in self.__examples]
+    def record(self, label: bool, stream, customer):
+        examplesList = [[str(ex.getDesc()), ex.getLabelTimestamp(), str(label), customer] for ex in self.__examples]
         stream.writerows(examplesList)
         self.__examples = []

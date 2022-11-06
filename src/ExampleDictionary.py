@@ -54,5 +54,6 @@ class ExampleDictionary:
     """
         Metodo per etichettare gli esempi nel dizionario. Richiama record di ExampleSequence.
     """
-    def recordLabeledExample(self, customer: str, label: bool, date, stream):
-        self.__examples[customer].record(label, date, stream, customer)
+    def recordLabeledExample(self, customer: str, label: bool, timestamp: dt.datetime, stream):
+        self.__examples[customer].setLabelTimestamp(timestamp)
+        self.__examples[customer].record(label, stream, customer)
