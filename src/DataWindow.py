@@ -7,8 +7,9 @@
 
 import datetime as dt
 from itertools import islice
+from itertools import chain
 import numpy as np
-import pandas as pd
+from collections import deque
 import operator
 
 from ExampleSequence import ExampleSequence
@@ -112,7 +113,7 @@ class DataWindow:
             - generazione di un esempio per ogni ricevuta del currentDay.
         Per ogni esempio calcolo RFM su tutti i 'periods' periodi. 
     """
-    def generateExamples(self, toFill):
+    def generateExamples(self, toFill: deque):
         # CASO 1:
         # Generazione esempi per tutti quei clienti che sono nel dizionario ExampleDictionary in attesa di essere
         # etichettati e non hanno comprato oggi
@@ -184,23 +185,24 @@ class DataWindow:
         Ritorna al chiamante un oggetto di tipo Rfm.
     """
     def __calculateRFM(self, period: list[Day]):
+        arr = np.asarray(period)
         recency = 0
         frequency = 0
         monetary = 0
-        for day in period:
-            try:
-                receipts = day.getReceiptsOfDay()
-                recency = self.__periodDim - period.index(day) - 1
-                frequency += len(receipts)
-                monetary += np.sum([receipt.getQAmount() for receipt in receipts])
-            except AttributeError:
-                pass
+        if period != [None] * self.__periodDim:
+            receipts = np.asarray(
+                list(chain.from_iterable([day.getReceiptsOfDay() for day in arr if day is not None]))
+            )
+            lastPos = next((pos for pos, el in enumerate(arr) if el is not None), self.__periodDim)
+            recency = self.__periodDim - lastPos - 1
+            frequency = np.count_nonzero(receipts)
+            monetary = np.sum([receipt.getQAmount() for receipt in receipts])
         return Rfm(recency, frequency, monetary)
 
     """
         Metodo per generare le etichette.
     """
-    def generateLabels(self, toFill: pd.DataFrame):
+    def generateLabels(self, toFill: deque):
         timestamp = dt.datetime(self.__currentDay.year, self.__currentDay.month, self.__currentDay.day, 23, 59, 59)
         try:
             customers = [cw.getKMember() for cw in self.__window.values() if

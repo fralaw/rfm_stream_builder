@@ -4,8 +4,8 @@
 // Version     : 3.0
 // Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di Examples.
 """
-import pandas as pd
 
+from collections import deque
 from Example import Example
 import datetime as dt
 
@@ -38,17 +38,15 @@ class ExampleSequence:
         Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e lo l'oggetto pandas su cui
         scriverò la row.
     """
-    def record(self, label: bool, toFill: pd.DataFrame, customer):
+    def record(self, label: bool, toFill: deque, customer):
         for example in self.__examples:
             row = []
             desc = example.getDesc()
-            timestamp = example.getLabelTimestamp()
             for rfm in desc:
                 recency = rfm.getRecency()
                 frequency = rfm.getFrequency()
                 monetary = rfm.getMonetary()
                 row += [recency, frequency, monetary]
-            row += [timestamp, label, customer]
-            # Creiamo il DataFrame pandas
-            toFill.loc[len(toFill.index)] = row
+            row += [example.getGenerationTimeStamp(), example.getLabelTimestamp(), label, customer]
+            toFill.append(row)
 
