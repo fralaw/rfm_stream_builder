@@ -9,8 +9,10 @@
                  Infine la connessione al db e il file verranno chiuse.
 """
 
-import csv
+from alive_progress import alive_bar
+import time
 import datetime as dt
+import pandas as pd
 
 from DBConnector import DBConnector
 from DataWindow import DataWindow
@@ -34,11 +36,18 @@ class StreamBuilder:
             - end: data di fine, di default l'ultima del db.
         Inizializza la DataWindow e richiama il metodo privato generateStream().
     """
+
     def __init__(self, host: str, username: str, password: str, databaseName: str,
                  churnDim: int, periodDim: int, periods: int, streamPath: str, start: dt.date = None,
                  end: dt.date = None):
         self.__mydb = DBConnector(host, username, password, databaseName)
         self.__window: DataWindow = DataWindow(periodDim, periods, churnDim)
+        columns = []
+        for i in range(1, periods + 1):
+            columns += [f'Recency{i}', f'Frequency{i}', f'Monetary{i}']
+        columns += ['Timestamp', 'Label', 'Customer']
+        self.__labeledExamples: pd.DataFrame = pd.DataFrame(columns=columns)
+        self.__labeledExamples.to_csv(streamPath, mode='w', index=False)
         self.__generateStream(streamPath, start, end)
 
     """
@@ -47,22 +56,23 @@ class StreamBuilder:
     def __generateStream(self, streamPath: str, start: dt.date, end: dt.date):
         currentDay = self.__mydb.extractFirstDay() if start is None else start
         lastDay = self.__mydb.extractLastDay() if end is None else end
-
-        # Apriamo il file
-        file = open(streamPath, "w", newline="")
-        stream = csv.writer(file)
-
-        while currentDay != lastDay:
-            print(currentDay, lastDay)
-            dataOfDay = self.__mydb.extractReceipts(currentDay)
-            self.__window.deleteFurthestDay()
-            self.__window.set(dataOfDay, currentDay)
-            self.__window.clean()
-            self.__window.generateLabels(stream)
-            self.__window.generateExamples(stream)
-            currentDay += dt.timedelta(days=1)
+        with alive_bar((lastDay-currentDay).days, force_tty=True) as bar:
+            while currentDay != lastDay:
+                dataOfDay = self.__mydb.extractReceipts(currentDay)
+                self.__window.deleteFurthestDay()
+                self.__window.set(dataOfDay, currentDay)
+                self.__window.clean()
+                self.__window.generateLabels(self.__labeledExamples)
+                self.__window.generateExamples(self.__labeledExamples)
+                self.__labeledExamples.sort_values(['Timestamp'], ascending=True, inplace=True)
+                self.__insertLabeledExamples(streamPath)
+                self.__labeledExamples = self.__labeledExamples.iloc[0:0]
+                currentDay += dt.timedelta(days=1)
+                bar()
         self.__mydb.closeConnection()
-        file.close()
+
+    def __insertLabeledExamples(self, streamPath):
+        self.__labeledExamples.to_csv(streamPath, index=False, mode='a', header=False)
 
 
-StreamBuilder("localhost", "root", "Cicciopazzo98", "test_db", 3, 2, 2, "stream.csv")
+StreamBuilder("localhost", "root", "", "", 3, 2, 2, "stream.csv")

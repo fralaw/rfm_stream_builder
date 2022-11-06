@@ -8,6 +8,7 @@
 import datetime as dt
 from itertools import islice
 import numpy as np
+import pandas as pd
 import operator
 
 from ExampleSequence import ExampleSequence
@@ -111,7 +112,7 @@ class DataWindow:
             - generazione di un esempio per ogni ricevuta del currentDay.
         Per ogni esempio calcolo RFM su tutti i 'periods' periodi. 
     """
-    def generateExamples(self, writer):
+    def generateExamples(self, toFill):
         # CASO 1:
         # Generazione esempi per tutti quei clienti che sono nel dizionario ExampleDictionary in attesa di essere
         # etichettati e non hanno comprato oggi
@@ -165,7 +166,7 @@ class DataWindow:
                         seq.appendExample(toWrite.copy())
                         oldMonetary = receipt.getQAmount()
                     # Etichettatura a False degli esempi costruiti per questa casistica
-                    seq.record(False, writer, cw.getKMember())
+                    seq.record(False, toFill, cw.getKMember())
         except TypeError:
             pass
 
@@ -199,14 +200,14 @@ class DataWindow:
     """
         Metodo per generare le etichette.
     """
-    def generateLabels(self, stream):
+    def generateLabels(self, toFill: pd.DataFrame):
         timestamp = dt.datetime(self.__currentDay.year, self.__currentDay.month, self.__currentDay.day, 23, 59, 59)
         try:
             customers = [cw.getKMember() for cw in self.__window.values() if
                          cw.getLastReceipt().date() == self.__currentDay]
             for customer in customers:
                 try:
-                    self.__examples.recordLabeledExample(customer, False, timestamp, stream)
+                    self.__examples.recordLabeledExample(customer, False, timestamp, toFill)
                     self.__examples.delete(customer)
                 except KeyError:
                     pass
@@ -218,7 +219,7 @@ class DataWindow:
                          (self.__currentDay - cw.getLastReceipt().date()).days == self.__churnDim]
             for member in customers:
                 try:
-                    self.__examples.recordLabeledExample(member, True, timestamp, stream)
+                    self.__examples.recordLabeledExample(member, True, timestamp, toFill)
                     self.__examples.delete(member)
                 except KeyError:
                     pass
