@@ -18,8 +18,8 @@ class Example:
     """
         Costruttore: setta il parametro labelTimeStamp e inizializza la lista desc come lista vuota.
     """
-    def __init__(self, startTimeStamp):
-        self.__startTimeStamp = startTimeStamp
+    def __init__(self, generationTimeStamp):
+        self.__generationTimeStamp = generationTimeStamp
         self.__labelTimeStamp = None
         self.__desc = []
 
@@ -27,9 +27,14 @@ class Example:
         Metodo getter StartTimeStamp.
         Return di un tipo datetime.
     """
-    def getStartTimeStamp(self):
-        return self.__startTimeStamp
+    def getGenerationTimeStamp(self):
+        return self.__generationTimeStamp
 
+    """
+        Metodo setter per generationTimeSTamp
+    """
+    def setGenerationTimeStamp(self, timestamp):
+        self.__generationTimeStamp = timestamp
     """
         Metodo add che aggiunge un Rfm alla lista di RFM.
     """
@@ -63,12 +68,13 @@ class Example:
     def setLabelTimestamp(self, timestamp: dt.datetime):
         self.__labelTimeStamp = timestamp
 
+
     """
            Metodo che effettua la copia. 
     """
     def copy(self):
         ex = Example(None)
         ex.__desc = self.__desc.copy()
-        ex.__startTimeStamp = self.__startTimeStamp
+        ex.__generationTimeStamp = self.__generationTimeStamp
         ex.__labelTimeStamp = self.__labelTimeStamp
         return ex
