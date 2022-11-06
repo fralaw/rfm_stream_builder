@@ -118,6 +118,7 @@ class DataWindow:
                         rfm = Rfm(rfm.getRecency(), rfm.getFrequency() - 1, rfm.getMonetary() - receipt.getQAmount())
                         ex.replaceLastRfm(rfm)
                         seq.appendExample(ex)
+                    seq.record(False, self.__currentDay, writer, cw.getKMember())
         except TypeError:
             pass
 

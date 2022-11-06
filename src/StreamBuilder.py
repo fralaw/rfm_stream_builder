@@ -12,9 +12,9 @@ class StreamBuilder:
                  end: dt.date = None):
         self.__mydb = DBConnector(host, username, password, databaseName)
         self.__window: DataWindow = DataWindow(periodDim, periods, churnDim)
-        self.__generateStream(streamPath, start, end, churnDim, periods)
+        self.__generateStream(streamPath, start, end)
 
-    def __generateStream(self, streamPath: str, start: dt.date, end: dt.date, churnDim: int, periods: int):
+    def __generateStream(self, streamPath: str, start: dt.date, end: dt.date):
         currentDay = self.__mydb.extractFirstDay() if start is None else start
         lastDay = self.__mydb.extractLastDay() if end is None else end
 

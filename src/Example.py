@@ -22,15 +22,6 @@ class Example:
         self.__desc = []
 
     """
-       Metodo che effettua la copia. 
-    """
-    def copy(self):
-        ex = Example(None)
-        ex.__desc = self.__desc.copy()
-        ex.__startTimeStamp = self.__startTimeStamp
-        return ex
-
-    """
         Metodo getter StartTimeStamp.
         Return di un tipo datetime.
     """

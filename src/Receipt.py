@@ -67,18 +67,3 @@ class Receipt:
     """
     def getTReceipt(self):
         return self.__T_Receipt
-
-    """
-         Override del metodo __repr__.
-         Permette di stampare il contenuto.
-         Return di un tipo string.
-     """
-    def __repr__(self):
-        return "K_Receipt: " + str(self.__K_Receipt) + "\n" \
-                                                       "K_Member: " + str(self.__K_Member) + "\n" \
-                                                                                             "Quantity: " + str(
-            self.__Quantity) + "\n" \
-                               "Q_Discount_Amount: " + str(self.__Q_Discount_Amount) + "\n" \
-                                                                                       "Q_Amount: " + str(
-            self.__Q_Amount) + "\n" \
-                               "T_Receipt: " + str(self.__T_Receipt) + "\n\n\n"

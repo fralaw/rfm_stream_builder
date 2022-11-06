@@ -8,6 +8,7 @@
 
 from Example import Example
 from ExampleSequence import ExampleSequence
+import datetime as dt
 
 
 class ExampleDictionary:
@@ -30,10 +31,7 @@ class ExampleDictionary:
         Metodo che verifica l'esistenza della chiave passata come parametro nella lista delle chiavi.
     """
     def containsKey(self, customer: str):
-        if customer in self.__examples.keys():
-            return True
-        else:
-            return False
+        return True if customer in self.__examples.keys() else False
 
     """
         Metodo per inserire un esempio nell' ExampleSequence all'interno del dizionario con chiave customer.
@@ -47,7 +45,7 @@ class ExampleDictionary:
             self.__examples[customer].appendExample(ex)
 
     """
-        Meotodo per cancellare un item dal dizionario avente in input un customer.
+        Metodo per cancellare un item dal dizionario avente in input un customer.
         Utilizzo di del per rendere efficiente la cancellazione.
     """
     def delete(self, customer: str):
@@ -58,10 +56,3 @@ class ExampleDictionary:
     """
     def recordLabeledExample(self, customer: str, label: bool, date, stream):
         self.__examples[customer].record(label, date, stream, customer)
-
-    """
-        Override del metodo __str__.
-        Return di un tipo string.
-    """
-    def __str__(self):
-        return str(self.__examples.items())
