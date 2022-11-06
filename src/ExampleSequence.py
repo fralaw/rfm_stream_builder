@@ -6,8 +6,6 @@
 """
 
 from Example import Example
-import datetime as dt
-from Rfm import Rfm
 
 
 class ExampleSequence:

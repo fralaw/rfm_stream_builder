@@ -15,17 +15,8 @@ class StreamBuilder:
         self.__generateStream(streamPath, start, end, churnDim, periods)
 
     def __generateStream(self, streamPath: str, start: dt.date, end: dt.date, churnDim: int, periods: int):
-        currentDay = dt.date.today()
-        if start is None:
-            currentDay = self.__mydb.extractFirstDay()
-        else:
-            currentDay = start
-
-        lastDay = dt.date.today()
-        if end is None:
-            lastDay = self.__mydb.extractLastDay()
-        else:
-            lastDay = end
+        currentDay = self.__mydb.extractFirstDay() if start is None else start
+        lastDay = self.__mydb.extractLastDay() if end is None else end
 
         file = open(streamPath, "w", newline="")
         stream = csv.writer(file)
@@ -36,9 +27,11 @@ class StreamBuilder:
             self.__window.deleteFurthestDay()
             self.__window.set(dataOfDay, currentDay)
             self.__window.clean()
-            # self.__window.generateLabels(stream)
-            # self.__window.generateExamples(stream)
+            self.__window.generateLabels(stream)
+            self.__window.generateExamples(stream)
             currentDay += dt.timedelta(days=1)
+        self.__mydb.closeConnection()
+        file.close()
 
 
-StreamBuilder("localhost", "root", "", "test_db", 115, 30, 3, "stream.csv")
+StreamBuilder("localhost", "root", "Cicciopazzo98", "test_db", 3, 2, 2, "stream.csv")

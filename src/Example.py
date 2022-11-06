@@ -13,7 +13,6 @@ class Example:
     # __desc; descrizione dell'esempio - lista di oggetti di classe Rfm
     # labelTimeStamp: sarà di tipo datetime e verrà riempita con il momento dell'etichettatura
     __desc: list[Rfm]
-    __labelTimeStamp = None
 
     """
         Costruttore: setta il parametro labelTimeStamp e inizializza la lista desc come lista vuota.
@@ -57,16 +56,3 @@ class Example:
     """
     def getDesc(self):
         return self.__desc
-
-    """
-        Metodo setter per labelTimeStamp.
-    """
-    def setLabelTimeStamp(self, labelTimeStamp):
-        self.__labelTimeStamp = labelTimeStamp
-
-    """
-        Metodo getter per labelTimeStamp.
-        Return di un tipo datetime.
-    """
-    def getLabelTimeStamp(self):
-        return self.__labelTimeStamp

@@ -1,14 +1,10 @@
-import csv
 import datetime as dt
 from itertools import islice
 import numpy as np
-
-import pandas as pd
 import operator
-from RfmException import EmptyRfmException
+
 from ExampleSequence import ExampleSequence
 from CustomerWindow import CustomerWindow
-from DBConnector import DBConnector
 from Day import Day
 from Example import Example
 from ExampleDictionary import ExampleDictionary
@@ -148,24 +144,24 @@ class DataWindow:
 
     def generateLabels(self, stream):
         try:
-            windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
-            for cw in windows:
+            customers = [cw.getKMember() for cw in self.__window.values() if
+                         cw.getLastReceipt().date() == self.__currentDay]
+            for customer in customers:
                 try:
-                    self.__examples.recordLabeledExample(cw.getKMember(), False, self.__currentDay, stream)
-                    self.__examples.delete(cw.getKMember())
+                    self.__examples.recordLabeledExample(customer, False, self.__currentDay, stream)
+                    self.__examples.delete(customer)
                 except KeyError:
                     pass
         except TypeError:
             pass
 
         try:
-            windows = [cw for cw in self.__window.values() if
-                       (self.__currentDay - cw.getLastReceipt().date()).days == self.__churnDim]
-            for cw in windows:
+            customers = [cw.getKMember() for cw in self.__window.values() if
+                         (self.__currentDay - cw.getLastReceipt().date()).days == self.__churnDim]
+            for member in customers:
                 try:
-                    self.__examples.recordLabeledExample(cw.getKMember(), True, self.__currentDay, stream)
-                    self.__examples.delete(cw.getKMember())
-                    del self.__window[cw.getKMember()]
+                    self.__examples.recordLabeledExample(member, True, self.__currentDay, stream)
+                    self.__examples.delete(member)
                 except KeyError:
                     pass
         except TypeError:
