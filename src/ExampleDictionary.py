@@ -5,7 +5,7 @@
 // Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di ExampleSequence
                  Ogni K_Member di Receipts è chiave nel dizionario dict <k, v> dove v: è di tipo ExampleSequence.
 """
-
+import pandas as pd
 from Example import Example
 from ExampleSequence import ExampleSequence
 import datetime as dt
@@ -54,6 +54,6 @@ class ExampleDictionary:
     """
         Metodo per etichettare gli esempi nel dizionario. Richiama record di ExampleSequence.
     """
-    def recordLabeledExample(self, customer: str, label: bool, timestamp: dt.datetime, stream):
+    def recordLabeledExample(self, customer: str, label: bool, timestamp: dt.datetime, toFill: pd.DataFrame):
         self.__examples[customer].setLabelTimestamp(timestamp)
-        self.__examples[customer].record(label, stream, customer)
+        self.__examples[customer].record(label, toFill, customer)

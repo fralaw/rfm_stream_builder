@@ -4,6 +4,7 @@
 // Version     : 3.0
 // Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di Examples.
 """
+import pandas as pd
 
 from Example import Example
 import datetime as dt
@@ -34,10 +35,20 @@ class ExampleSequence:
 
     """
         Metodo record per etichettare e mettere nello stream gli esempi.
-        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e lo stream su cui
-        scriverò la row di exampleList: lista costruita con le list comprehension.
+        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e lo l'oggetto pandas su cui
+        scriverò la row.
     """
-    def record(self, label: bool, stream, customer):
-        examplesList = [[str(ex.getDesc()), ex.getLabelTimestamp(), str(label), customer] for ex in self.__examples]
-        stream.writerows(examplesList)
-        self.__examples = []
+    def record(self, label: bool, toFill: pd.DataFrame, customer):
+        for example in self.__examples:
+            row = []
+            desc = example.getDesc()
+            timestamp = example.getLabelTimestamp()
+            for rfm in desc:
+                recency = rfm.getRecency()
+                frequency = rfm.getFrequency()
+                monetary = rfm.getMonetary()
+                row += [recency, frequency, monetary]
+            row += [timestamp, label, customer]
+            # Creiamo il DataFrame pandas
+            toFill.loc[len(toFill.index)] = row
+
