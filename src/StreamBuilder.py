@@ -10,7 +10,6 @@
 """
 
 from alive_progress import alive_bar
-import time
 import datetime as dt
 import pandas as pd
 
@@ -36,7 +35,6 @@ class StreamBuilder:
             - end: data di fine, di default l'ultima del db.
         Inizializza la DataWindow e richiama il metodo privato generateStream().
     """
-
     def __init__(self, host: str, username: str, password: str, databaseName: str,
                  churnDim: int, periodDim: int, periods: int, streamPath: str, start: dt.date = None,
                  end: dt.date = None):
