@@ -6,6 +6,7 @@
 """
 
 from Rfm import Rfm
+import datetime as dt
 
 
 class Example:
@@ -13,23 +14,14 @@ class Example:
     # __desc; descrizione dell'esempio - lista di oggetti di classe Rfm
     # labelTimeStamp: sarà di tipo datetime e verrà riempita con il momento dell'etichettatura
     __desc: list[Rfm]
-    __labelTimeStamp = None
 
     """
         Costruttore: setta il parametro labelTimeStamp e inizializza la lista desc come lista vuota.
     """
     def __init__(self, startTimeStamp):
         self.__startTimeStamp = startTimeStamp
+        self.__labelTimeStamp = None
         self.__desc = []
-
-    """
-       Metodo che effettua la copia. 
-    """
-    def copy(self):
-        ex = Example(None)
-        ex.__desc = self.__desc.copy()
-        ex.__startTimeStamp = self.__startTimeStamp
-        return ex
 
     """
         Metodo getter StartTimeStamp.
@@ -59,14 +51,24 @@ class Example:
         return self.__desc
 
     """
-        Metodo setter per labelTimeStamp.
-    """
-    def setLabelTimeStamp(self, labelTimeStamp):
-        self.__labelTimeStamp = labelTimeStamp
-
-    """
         Metodo getter per labelTimeStamp.
         Return di un tipo datetime.
     """
-    def getLabelTimeStamp(self):
+    def getLabelTimestamp(self):
         return self.__labelTimeStamp
+
+    """
+        Metodo setter per labelTimeStamp.
+    """
+    def setLabelTimestamp(self, timestamp: dt.datetime):
+        self.__labelTimeStamp = timestamp
+
+    """
+           Metodo che effettua la copia. 
+    """
+    def copy(self):
+        ex = Example(None)
+        ex.__desc = self.__desc.copy()
+        ex.__startTimeStamp = self.__startTimeStamp
+        ex.__labelTimeStamp = self.__labelTimeStamp
+        return ex

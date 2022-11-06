@@ -26,7 +26,7 @@ class DBConnector:
             - database: Il nome del database a cui si desidera connettersi ed eseguire le operazioni.
         Il costruttore setta gli attributi della classe con i parametri ricevuti in input.
     """
-    def __init__(self, host="localhost", username="root", password="", database="brazilian_churn_retail_db"):
+    def __init__(self, host="localhost", username="root", password="", database="test_db"):
         self.__host = host
         self.__username = username
         self.__password = password

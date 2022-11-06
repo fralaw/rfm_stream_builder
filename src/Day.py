@@ -18,12 +18,7 @@ class Day:
         Se viene passata una lista si effettua una copia dell'oggetto tramite il .copy().
     """
     def __init__(self, receipts: list = None):
-        if receipts is None:
-            self.__receipts = []
-        if type(receipts) is list:
-            self.__receipts = receipts.copy()
-        else:
-            raise TypeError
+        self.__receipts = [] if receipts is None else receipts.copy()
 
     """
         Metodo per aggiungere una nuova receipt alla lista.
@@ -37,13 +32,3 @@ class Day:
     """
     def getReceiptsOfDay(self):
         return self.__receipts
-
-    """
-        Override del metodo __str__.
-        Return di un tipo string.
-    """
-    def __str__(self):
-        receiptsToStr = str()
-        for r in self.__receipts:
-            receiptsToStr += (str(r) + "\n\n")
-        return receiptsToStr

@@ -48,12 +48,12 @@ class Rfm:
         Return di un tipo string
     """
     def __str__(self):
-        return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
+        return " ".join([str(self.getRecency()), str(self.getFrequency()), str(self.getMonetary())])
 
     """
-         Override del metodo __repr__.
-         Permette di stampare il contenuto.
-         Return di un tipo string
-     """
+        Override del metodo __repr__.
+        Permette di stampare il contenuto.
+        Return di un tipo string
+    """
     def __repr__(self):
-        return str(self.getRecency()) + str(self.getFrequency()) + str(self.getMonetary())
+        return " ".join([str(self.getRecency()), str(self.getFrequency()), str(self.getMonetary())])
