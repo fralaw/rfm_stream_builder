@@ -114,14 +114,14 @@ class DataWindow:
         Per ogni esempio calcolo RFM su tutti i 'periods' periodi. 
     """
     def generateExamples(self, toFill: deque):
-        # CASO 1:
-        # Generazione esempi per tutti quei clienti che sono nel dizionario ExampleDictionary in attesa di essere
-        # etichettati e non hanno comprato oggi
+        # Generazione esempi per tutti quei clienti che hanno comprato
+        # nel periodo che va da ]currentDay-churnDim, currentDay]
         try:
-            # Lista di CustomerWindow dei clienti che in currentDay non hanno effettuato acquisti e sono nel dizionario
+            # Lista di CustomerWindow dei clienti che in currentDay hanno effettuato acquisti e/o sono nel dizionario
             windows = [cw for cw in self.__window.values()
-                       if 1 <= (self.__currentDay - cw.getLastReceipt().date()).days < self.__churnDim]
+                       if (self.__currentDay - cw.getLastReceipt().date()).days < self.__churnDim]
             for cw in windows:
+                rfm = Rfm(0, 0, 0)
                 periods = self.__splitPeriods(cw)
                 ex = Example(self.__currentDay)
                 for period in periods:
@@ -129,45 +129,30 @@ class DataWindow:
                     ex.addRfm(rfm)
                 # Inserisce l' esempio in ExampleDictionary. Esso è formato dai k (con k=periods) RFM calcolati.
                 self.__examples.insertExample(cw.getKMember(), ex)
-        except TypeError:
-            pass
-
-        # CASO 2:
-        # Generazione esempi per tutti quei clienti che hanno effettuato acquisti nel currentDay
-        try:
-            # Lista di CustomerWindow dei clienti che in currentDay hanno effettuato acquisti
-            windows = [cw for cw in self.__window.values() if cw.getLastReceipt().date() == self.__currentDay]
-            for cw in windows:
-                rfm = Rfm(0, 0, 0)
-                periods = self.__splitPeriods(cw)
-                ex = Example(self.__currentDay)
-                for period in periods:
-                    rfm = self.__calculateRFM(period)
-                    # Aggiunge Rfm all'esempio
-                    ex.addRfm(rfm)
-                self.__examples.insertExample(cw.getKMember(), ex)
-                # Accesso all'ultimo elemento della DataWindow attraverso l'operatore 'itemgetter' della libreria
-                # operator per controllare qualora vi siano più ricevute relative al currentDay
-                day = operator.itemgetter(-1)(cw.getListOfDays())
-                receipts = day.getReceiptsOfDay()
-                # Se nel Day ci sono più ricevute
-                if len(receipts) > 1:
-                    # Instanziazione dell'ExampleSequence che conterrà gli esempi da etichettare immediatamente
-                    seq = ExampleSequence()
-                    # Ciclo sulle ricevute del giorno partendo dall'ultima. Questo ci permetterà di scandire una sola
-                    # volta il periodo per il calcolo RFM. Per le ricevute precedenti all'ultima, il calcolo viene
-                    # effettuato per sottrazione.
-                    receipts.reverse()
-                    oldMonetary = receipts[0].getQAmount()
-                    for receipt in receipts[1:]:
-                        rfm = Rfm(rfm.getRecency(), rfm.getFrequency() - 1, rfm.getMonetary() - oldMonetary)
-                        toWrite = ex.copy()
-                        toWrite.replaceLastRfm(rfm)
-                        toWrite.setLabelTimestamp(receipt.getTReceipt())
-                        seq.appendExample(toWrite.copy())
-                        oldMonetary = receipt.getQAmount()
-                    # Etichettatura a False degli esempi costruiti per questa casistica
-                    seq.record(False, toFill, cw.getKMember())
+                # Verifica se il cliente attuale ha acquistato nel currentDay
+                if cw.getLastReceipt().date() == self.__currentDay:
+                    # Accesso all'ultimo elemento della DataWindow attraverso l'operatore 'itemgetter' della libreria
+                    # operator per controllare qualora vi siano più ricevute relative al currentDay
+                    day = operator.itemgetter(-1)(cw.getListOfDays())
+                    receipts = day.getReceiptsOfDay()
+                    # Se nel Day ci sono più ricevute
+                    if len(receipts) > 1:
+                        # Instanziazione dell'ExampleSequence che conterrà gli esempi da etichettare immediatamente
+                        seq = ExampleSequence()
+                        # Ciclo sulle ricevute del giorno partendo dall'ultima.Questo ci permetterà di scandire una sola
+                        # volta il periodo per il calcolo RFM. Per le ricevute precedenti all'ultima, il calcolo viene
+                        # effettuato per sottrazione.
+                        receipts.reverse()
+                        oldMonetary = receipts[0].getQAmount()
+                        for receipt in receipts[1:]:
+                            rfm = Rfm(rfm.getRecency(), rfm.getFrequency() - 1, rfm.getMonetary() - oldMonetary)
+                            toWrite = ex.copy()
+                            toWrite.replaceLastRfm(rfm)
+                            toWrite.setLabelTimestamp(receipt.getTReceipt())
+                            seq.appendExample(toWrite.copy())
+                            oldMonetary = receipt.getQAmount()
+                        # Etichettatura a False degli esempi costruiti per questa casistica
+                        seq.record(False, toFill, cw.getKMember())
         except TypeError:
             pass
 
@@ -186,7 +171,7 @@ class DataWindow:
     """
     def __calculateRFM(self, period: list[Day]):
         arr = np.asarray(period)
-        recency = 0
+        recency = -1
         frequency = 0
         monetary = 0
         if period != [None] * self.__periodDim:

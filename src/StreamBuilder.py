@@ -13,7 +13,6 @@ from alive_progress import alive_bar
 from collections import deque
 import datetime as dt
 import pandas as pd
-import cProfile
 from DBConnector import DBConnector
 from DataWindow import DataWindow
 
@@ -40,6 +39,8 @@ class StreamBuilder:
     def __init__(self, host: str, username: str, password: str, databaseName: str,
                  churnDim: int, periodDim: int, periods: int, streamPath: str, start: dt.date = None,
                  end: dt.date = None):
+        if churnDim>periodDim*periods:
+            raise ValueError
         self.__mydb = DBConnector(host, username, password, databaseName)
         self.__window: DataWindow = DataWindow(periodDim, periods, churnDim)
         columns = []
@@ -63,12 +64,11 @@ class StreamBuilder:
                 self.__window.deleteFurthestDay()
                 self.__window.set(dataOfDay, currentDay)
                 self.__window.generateLabels(deq)
-                self.__window.generateExamples(deq)
+                self.__window.generateExamples(deq)# and labels on multiple receipts
                 self.__window.clean()
                 self.__labeledExamples = pd.DataFrame(deq, columns=self.__labeledExamples.columns)
                 self.__labeledExamples.sort_values(['Label Timestamp'], ascending=True, inplace=True)
                 self.__insertLabeledExamples(streamPath)
-                self.__labeledExamples = self.__labeledExamples.iloc[0:0]
                 currentDay += dt.timedelta(days=1)
                 bar()
         self.__mydb.closeConnection()
@@ -77,4 +77,8 @@ class StreamBuilder:
         self.__labeledExamples.to_csv(streamPath, index=False, mode='a', header=False)
 
 
-StreamBuilder("localhost", "root", "", "", 3, 2, 2, "stream.csv")
+try:
+    StreamBuilder("localhost", "root", "", "", 3, 2, 2, "stream.csv")
+except ValueError:
+    print("Il parametro churnDim non può essere maggiore di periodDim*periods. Questo impatta negativamente la funzione"
+          "splitPeriods di DataWindow!")
