@@ -68,7 +68,6 @@ class Example:
     def setLabelTimestamp(self, timestamp: dt.datetime):
         self.__labelTimeStamp = timestamp
 
-
     """
            Metodo che effettua la copia. 
     """

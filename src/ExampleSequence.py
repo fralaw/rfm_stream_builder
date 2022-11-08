@@ -5,7 +5,6 @@
 // Description : Classe che modella la sequenza di esempi. È formata da un unico attributo: la lista di Examples.
 """
 
-from collections import deque
 from Example import Example
 import datetime as dt
 
@@ -35,10 +34,10 @@ class ExampleSequence:
 
     """
         Metodo record per etichettare e mettere nello stream gli esempi.
-        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e lo l'oggetto pandas su cui
+        Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e la lista su cui
         scriverò la row.
     """
-    def record(self, label: bool, toFill: deque, customer):
+    def record(self, label: bool, toFill: list, customer):
         for example in self.__examples:
             row = []
             desc = example.getDesc()
@@ -47,6 +46,5 @@ class ExampleSequence:
                 frequency = rfm.getFrequency()
                 monetary = rfm.getMonetary()
                 row += [recency, frequency, monetary]
-            row += [example.getGenerationTimeStamp(), example.getLabelTimestamp(), label, customer]
+            row += [example.getLabelTimestamp(), label, customer]
             toFill.append(row)
-
