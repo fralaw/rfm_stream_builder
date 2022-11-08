@@ -4,7 +4,8 @@
 Per installare le dipendenze utilizzare il comando: ``pip install -r /path/to/requirements.txt``.
 
 La serializzazione degli esempi etichettati avviene all'interno della cartella output e sono denominati con la data del giorno in cui sono stati etichettati.
-Prima di eseguire il programma, tuttavia, è opportuno svuotare la cartella output dai risultati di eventuali precedenti esecuzioni.
+
+**Prima di eseguire il programma, tuttavia, è opportuno svuotare la cartella output dai risultati di eventuali precedenti esecuzioni.**
 
 Per eseguire il software è necessario utilizzare il terminale posizionandosi nella cartella 'src' del progetto e 
 digitare:
@@ -24,4 +25,6 @@ digitare:
 Esempio di input:
 
 ``python StreamBuilder.py --password "la_tua_password" --database "nome_db" --churnDim 4 --periodDim 4 --periods 4 --start 2022-01-01 --end 2022-02-07``
+
+Nella cartella resources è possibile trovare il diagramma delle classi e lo scripts sql per creare un db di test.
 

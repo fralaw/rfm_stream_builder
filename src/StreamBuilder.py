@@ -8,6 +8,8 @@
                  Il metodo privato generateStream genererà esempi opportunamente etichettati.
                  Infine la connessione al db e il file verranno chiuse.
 """
+import os
+
 import mysql.connector.errors
 from alive_progress import alive_bar
 import datetime as dt
@@ -78,11 +80,18 @@ class StreamBuilder:
     def __insertLabeledExamples(self, examplesOfDay: list, currentDay: dt.date):
         # Crea il percorso alla tua sotto cartella e al file
         path = self.__outputFolder / str(currentDay)
+        try:
         # Apri il file
-        with open(path, 'wb') as f:
-            # Inserisci file nel pickle
-            pickle.dump(examplesOfDay, f)
-        # with chiude automaticamente la connessione al file dopo aver inserito i pickle
+            with open(path, 'wb') as f:
+                # Inserisci file nel pickle
+                pickle.dump(examplesOfDay, f)
+            # with chiude automaticamente la connessione al file dopo aver inserito i pickle
+        except FileNotFoundError:
+            os.mkdir(self.__outputFolder)
+            with open(path, 'wb') as f:
+                # Inserisci file nel pickle
+                pickle.dump(examplesOfDay, f)
+
 
 
 """
