@@ -9,7 +9,6 @@ import datetime as dt
 from itertools import islice
 from itertools import chain
 import numpy as np
-from collections import deque
 import operator
 
 from ExampleSequence import ExampleSequence
@@ -106,14 +105,14 @@ class DataWindow:
             val.deleteFurthestDay()
 
     """
-        Metodo per la generazione degli esempi. Ha in input un oggetto writer per poter serializzare su file gli esempi.
+        Metodo per la generazione degli esempi. Ha in input una lista dove collezionare gli esempi etichettati.
         La generazione degli esempi avviene nel seguente modo:
             - generazione dell'esempio anche per i giorni in cui non ci sono ricevute ma ci sono esempi nel 
               ExampleDictionary in attesa di etichettatura.
             - generazione di un esempio per ogni ricevuta del currentDay.
         Per ogni esempio calcolo RFM su tutti i 'periods' periodi. 
     """
-    def generateExamples(self, toFill: deque):
+    def generateExamplesLabelsForMulReceipts(self, toFill: list):
         # Generazione esempi per tutti quei clienti che hanno comprato
         # nel periodo che va da ]currentDay-churnDim, currentDay]
         try:
@@ -146,10 +145,10 @@ class DataWindow:
                         oldMonetary = receipts[0].getQAmount()
                         for receipt in receipts[1:]:
                             rfm = Rfm(rfm.getRecency(), rfm.getFrequency() - 1, rfm.getMonetary() - oldMonetary)
-                            toWrite = ex.copy()
-                            toWrite.replaceLastRfm(rfm)
-                            toWrite.setLabelTimestamp(receipt.getTReceipt())
-                            seq.appendExample(toWrite.copy())
+                            newExample = ex.copy()
+                            newExample.replaceLastRfm(rfm)
+                            newExample.setLabelTimestamp(receipt.getTReceipt())
+                            seq.appendExample(newExample.copy())
                             oldMonetary = receipt.getQAmount()
                         # Etichettatura a False degli esempi costruiti per questa casistica
                         seq.record(False, toFill, cw.getKMember())
@@ -170,15 +169,15 @@ class DataWindow:
         Ritorna al chiamante un oggetto di tipo Rfm.
     """
     def __calculateRFM(self, period: list[Day]):
-        arr = np.asarray(period)
         recency = -1
         frequency = 0
         monetary = 0
         if period != [None] * self.__periodDim:
             receipts = np.asarray(
-                list(chain.from_iterable([day.getReceiptsOfDay() for day in arr if day is not None]))
+                list(chain.from_iterable([day.getReceiptsOfDay() for day in period if day is not None]))
             )
-            lastPos = next((pos for pos, el in enumerate(arr) if el is not None), self.__periodDim)
+            lastPos = self.__periodDim - next((pos for pos, el in enumerate(period.__reversed__()) if el is not None),
+                                              self.__periodDim) - 1
             recency = self.__periodDim - lastPos - 1
             frequency = np.count_nonzero(receipts)
             monetary = np.sum([receipt.getQAmount() for receipt in receipts])
@@ -187,7 +186,7 @@ class DataWindow:
     """
         Metodo per generare le etichette.
     """
-    def generateLabels(self, toFill: deque):
+    def generateLabels(self, toFill: list):
         timestamp = dt.datetime(self.__currentDay.year, self.__currentDay.month, self.__currentDay.day, 23, 59, 59)
         try:
             customers = [cw.getKMember() for cw in self.__window.values() if
