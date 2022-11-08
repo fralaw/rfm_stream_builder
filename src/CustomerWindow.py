@@ -12,7 +12,6 @@ from Day import Day
 
 
 class CustomerWindow:
-    __dayList: list[Day | None] = []
 
     """
         Metodo costruttore. Inizializza gli attributi privati della classe con i valori passati in input.
