@@ -56,4 +56,4 @@ class ExampleDictionary:
     """
     def recordLabeledExample(self, customer: str, label: bool, timestamp: dt.datetime, toFill: list):
         self.__examples[customer].setLabelTimestamp(timestamp)
-        self.__examples[customer].record(label, toFill, customer)
+        self.__examples[customer].record(label, toFill)

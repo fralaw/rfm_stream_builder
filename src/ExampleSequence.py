@@ -37,7 +37,7 @@ class ExampleSequence:
         Riceve in input un'etichetta booleana (T o F), il codice cliente (provvisorio) e la lista su cui
         scriverò la row.
     """
-    def record(self, label: bool, toFill: list, customer):
+    def record(self, label: bool, toFill: list):
         for example in self.__examples:
             row = []
             desc = example.getDesc()
@@ -46,5 +46,5 @@ class ExampleSequence:
                 frequency = rfm.getFrequency()
                 monetary = rfm.getMonetary()
                 row += [recency, frequency, monetary]
-            row += [example.getLabelTimestamp(), label, customer]
+            row += [example.getLabelTimestamp(), label]
             toFill.append(row)

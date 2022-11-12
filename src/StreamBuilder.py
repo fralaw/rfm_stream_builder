@@ -11,6 +11,7 @@
 import os
 
 import mysql.connector.errors
+import pandas as pd
 from alive_progress import alive_bar
 import datetime as dt
 import pickle
@@ -78,19 +79,25 @@ class StreamBuilder:
        Ciascun file (pickle) avrà nome pari al currentDay in cui è stato etichettato.
     """
     def __insertLabeledExamples(self, examplesOfDay: list, currentDay: dt.date):
-        # Crea il percorso alla tua sotto cartella e al file
-        path = self.__outputFolder / str(currentDay)
         try:
-        # Apri il file
-            with open(path, 'wb') as f:
-                # Inserisci file nel pickle
-                pickle.dump(examplesOfDay, f)
-            # with chiude automaticamente la connessione al file dopo aver inserito i pickle
-        except FileNotFoundError:
-            os.mkdir(self.__outputFolder)
-            with open(path, 'wb') as f:
-                # Inserisci file nel pickle
-                pickle.dump(examplesOfDay, f)
+            columnToSort = len(examplesOfDay[0]) - 2
+            df = pd.DataFrame(examplesOfDay)
+            df.sort_values([list(df.columns)[columnToSort]], ascending=True, inplace=True)
+            # Crea il percorso alla tua sotto cartella e al file
+            path = self.__outputFolder / str(currentDay)
+            try:
+            # Apri il file
+                with open(path, 'wb') as f:
+                    # Inserisci file nel pickle
+                    pickle.dump(df, f)
+                # with chiude automaticamente la connessione al file dopo aver inserito i pickle
+            except FileNotFoundError:
+                os.mkdir(self.__outputFolder)
+                with open(path, 'wb') as f:
+                    # Inserisci file nel pickle
+                    pickle.dump(df, f)
+        except IndexError:
+            pass
 
 
 
