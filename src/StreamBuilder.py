@@ -9,7 +9,6 @@
                  Infine la connessione al db e il file verranno chiuse.
 """
 import os
-
 import mysql.connector.errors
 import pandas as pd
 from alive_progress import alive_bar
@@ -19,6 +18,7 @@ from DBConnector import DBConnector
 from DataWindow import DataWindow
 from pathlib import Path
 import argparse
+
 
 class StreamBuilder:
     """
@@ -77,16 +77,18 @@ class StreamBuilder:
     """        
        Metodo che effettua la serializzazione degli esempi etichettati (examplesOfDay) in data currentDay. 
        Ciascun file (pickle) avrà nome pari al currentDay in cui è stato etichettato.
+       I Day vuoti non verranno serializzati.
     """
     def __insertLabeledExamples(self, examplesOfDay: list, currentDay: dt.date):
         try:
-            columnToSort = len(examplesOfDay[0]) - 2
             df = pd.DataFrame(examplesOfDay)
-            df.sort_values([list(df.columns)[columnToSort]], ascending=True, inplace=True)
+            dateColumn = list(df.columns)[len(examplesOfDay[0]) - 2]
+            df.sort_values([dateColumn], ascending=True, inplace=True)
+            df.drop(columns=[dateColumn], inplace=True)
             # Crea il percorso alla tua sotto cartella e al file
             path = self.__outputFolder / str(currentDay)
             try:
-            # Apri il file
+                # Apri il file
                 with open(path, 'wb') as f:
                     # Inserisci file nel pickle
                     pickle.dump(df, f)
