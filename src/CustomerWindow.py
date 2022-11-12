@@ -19,7 +19,6 @@ class CustomerWindow:
             - dim: dimensione della CustomerWindow, di tipo intero.  
         Viene inoltre inizializzato l'attributo privato lastReceipt che mantiene la data dell'ultimo acquisto.
     """
-
     def __init__(self, customer: str, dim: int):
         self.__lastReceipt: dt.datetime = None
         self.__K_Member = customer
@@ -30,7 +29,6 @@ class CustomerWindow:
         Metodo getter K_Member.
         Return di un tipo int.
     """
-
     def getKMember(self):
         return self.__K_Member
 
@@ -38,7 +36,6 @@ class CustomerWindow:
         Metodo getter lastReceipt.
         Return di un tipo datetime.
     """
-
     def getLastReceipt(self):
         return self.__lastReceipt
 
@@ -46,7 +43,6 @@ class CustomerWindow:
         Metodo getter dayList. 
         Return di un tipo lista (di giorni della finestra temporale).
     """
-
     def getListOfDays(self):
         return self.__dayList
 
@@ -54,7 +50,6 @@ class CustomerWindow:
         Metodo che inserisce un giorno all'interno della finestra
         aggiornando la data di ultimo acquisto.
     """
-
     def setDay(self, day: Day, lastReceiptTime: dt.datetime):
         self.__dayList[-1] = day
         self.__lastReceipt = lastReceiptTime
@@ -62,7 +57,6 @@ class CustomerWindow:
     """
         Metodo che 'shifta' la finestra rimuovendo il giorno più vecchio e aggiungendo un oggetto None alla fine.
     """
-
     def deleteFurthestDay(self):
         self.__dayList.pop(0)
         self.__dayList.append(None)
@@ -70,7 +64,6 @@ class CustomerWindow:
     """
         Metodo che verifica se l'utente non ha acquistato nemmeno un giorno nella finestra temporale.
     """
-
     def isEmpty(self):
         return self.__dayList == [None] * len(self.__dayList)
 
@@ -78,12 +71,15 @@ class CustomerWindow:
         Override del metodo __str__.
         Return di un tipo string.
     """
-
     def __str__(self):
         return "\n".join(
             [f'Customer: {self.__K_Member}', f'Last Purchase: {self.__lastReceipt}', f'Days: {self.__dayList}\n']
         )
 
+    """
+        Override del metodo __repr__.
+        Return di un tipo string.
+    """
     def __repr__(self):
         return "\n".join(
             [f'Customer: {self.__K_Member}', f'Last Purchase: {self.__lastReceipt}', f'Days: {self.__dayList}\n']

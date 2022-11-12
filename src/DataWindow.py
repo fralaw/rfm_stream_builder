@@ -151,7 +151,7 @@ class DataWindow:
                             seq.appendExample(newExample.copy())
                             oldMonetary = receipt.getQAmount()
                         # Etichettatura a False degli esempi costruiti per questa casistica
-                        seq.record(False, toFill, cw.getKMember())
+                        seq.record(False, toFill)
         except TypeError:
             pass
 
