@@ -11,11 +11,9 @@ from ClassifierInterface import ClassifierInterface
 
 
 class StreamClassifier(ClassifierInterface):
-    __model: base.Classifier
 
-    @abc.abstractmethod
     def __init__(self):
-        pass
+        self.__model: base.Classifier
 
     def learn(self, x: pd.DataFrame, y: pd.Series):
         for index, row in x.iterrows():
