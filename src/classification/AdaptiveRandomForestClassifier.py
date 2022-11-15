@@ -5,12 +5,28 @@
 // Description : Classe concreta AdaptiveRandomForestClassifier che eredita da StreamClassifier.
 """
 from river import ensemble
-from StreamClassifier import StreamClassifier
+from ClassifierInterface import ClassifierInterface
+import pandas as pd
 
 
-class AdaptiveRandomForestClassifier(StreamClassifier):
+class AdaptiveRandomForestClassifier(ClassifierInterface):
     def __init__(self):
         self.__model = ensemble.AdaptiveRandomForestClassifier()
 
-    def __abstractClass(self):
-        pass
+    def learn(self, x: pd.DataFrame, y: pd.Series):
+        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
+        x_dict = x.to_dict(orient="records")
+        for x_row, y_row in zip(x_dict, y):
+            self.__model.learn_one(x_row, y_row)
+
+    def predict_many(self, x: pd.DataFrame) -> pd.Series:
+        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
+        x_dict = x.to_dict(orient="records")
+        labels = []
+        for row in x_dict:
+            label = self.__model.predict_one(row)
+            labels.append(label)
+        return pd.Series(labels)
+
+    def predict_one(self, x: pd.Series) -> bool:
+        return self.__model.predict_one(x.to_dict())
