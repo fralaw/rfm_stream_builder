@@ -1,9 +1,11 @@
 """
 // Name        : OnlineLearner.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 3.0
+// Version     : 1.0
 // Description : Classe OnlineLearner.
 """
+import enum
+
 import pandas as pd
 
 from AdaptiveRandomForestClassifier import AdaptiveRandomForestClassifier
@@ -31,6 +33,7 @@ class OnlineLearner:
     def train(self, loader: PickleLoader):
         for df in loader:
             X = df.iloc[:, 0:-1]
+            X = X.apply(pd.to_numeric, downcast='float')
             y = df.iloc[:, -1]
             self.__model.learn(X, y)
 
@@ -42,16 +45,16 @@ class OnlineLearner:
         return labels
 
     def test(self, loader: PickleLoader):
-        target = pd.Series()
-        y_test = pd.Series()
+        predicted_labels = []
+        true_labels = []
         for df in loader:
             X = df.iloc[:, 0:-1]
-            y_test = pd.concat([y_test, df.iloc[:, -1]])
-            target = pd.concat([target, self.__model.predict_many(X)])
-        df = pd.DataFrame()
-        target.rename('target', inplace=True)
-        y_test.rename('y_test', inplace=True)
-        df = pd.concat([target, y_test], axis=1)
+            X = X.apply(pd.to_numeric, downcast='float')
+            true_labels += list(df.iloc[:, -1])
+            predicted_labels += list(self.__model.predict(X))
+        target = pd.Series(predicted_labels)
+        y_test = pd.Series(true_labels)
+        df = pd.concat([y_test, target], axis=1)
         return df
 
     def toPickle(self, folderPath: str):

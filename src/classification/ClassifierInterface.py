@@ -1,7 +1,7 @@
 """
 // Name        : ClassifierInterface.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 3.0
+// Version     : 1.0
 // Description : Interfaccia ClassifierInterface per permettere alle classi astratte StreamClassifier e
                  IncrementalClassifier di implementare i metodi sottostanti.
 """

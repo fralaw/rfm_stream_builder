@@ -1,7 +1,7 @@
 """
 // Name        : PickleLoader.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 3.0
+// Version     : 1.0
 // Description : La seguente classe si occupa di aprire la directory contenente i pickle e caricarli, restituendo
                  il prossimo elemento fino alla fine della directory. Sono parametrizzati anche lo start e l'end.
 """
@@ -28,5 +28,6 @@ def PickleLoader(folderPath: str, start: str = None, end: str = None):
             # Apriamo il file.
             with open(file_path, "rb") as f:
                 # Carichiamo il pickle.
+                print(f)
                 yield pickle.load(f)
 
