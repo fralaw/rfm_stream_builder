@@ -17,12 +17,10 @@ class IncrementalClassifier(ClassifierInterface):
 
     def learn(self, x: pd.DataFrame, y: pd.Series):
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
-        x = x.apply(pd.to_numeric, downcast='float')
         self.__model.learn_many(x, y)
 
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
-        x = x.apply(pd.to_numeric, downcast='float')
         return self.__model.predict_many(x)
 
     def predict_one(self, x: pd.Series) -> bool:
