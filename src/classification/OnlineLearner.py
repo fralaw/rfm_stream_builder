@@ -33,7 +33,6 @@ class OnlineLearner:
     def train(self, loader: PickleLoader):
         for df in loader:
             X = df.iloc[:, 0:-1]
-            X = X.apply(pd.to_numeric, downcast='float')
             y = df.iloc[:, -1]
             self.__model.learn(X, y)
 
@@ -49,9 +48,8 @@ class OnlineLearner:
         true_labels = []
         for df in loader:
             X = df.iloc[:, 0:-1]
-            X = X.apply(pd.to_numeric, downcast='float')
             true_labels += list(df.iloc[:, -1])
-            predicted_labels += list(self.__model.predict(X))
+            predicted_labels += list(self.__model.predict_many(X))
         target = pd.Series(predicted_labels)
         y_test = pd.Series(true_labels)
         df = pd.concat([y_test, target], axis=1)

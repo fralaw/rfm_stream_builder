@@ -82,6 +82,7 @@ class StreamBuilder:
     def __insertLabeledExamples(self, examplesOfDay: list, currentDay: dt.date):
         try:
             df = pd.DataFrame(examplesOfDay)
+            df = df.apply(pd.to_numeric, downcast='float')
             dateColumn = list(df.columns)[len(examplesOfDay[0]) - 2]
             df.sort_values([dateColumn], ascending=True, inplace=True)
             df.drop(columns=[dateColumn], inplace=True)
