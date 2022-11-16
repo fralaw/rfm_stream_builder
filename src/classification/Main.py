@@ -1,14 +1,15 @@
 """
 // Name        : Main.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 1.0
+// Version     : 2.0
 // Description : Classe Main.
 """
-import enum
+
 import os
 import matplotlib.pyplot as plt
 import scikitplot as skplt
 
+from sklearn.metrics import accuracy_score, classification_report, mean_absolute_error
 from OnlineLearner import OnlineLearner
 from PickleLoader import PickleLoader
 from ClassifierName import ClassifierName
@@ -21,14 +22,22 @@ class Main:
 
         train_loader = PickleLoader(folderPath, start=files[0], end=files[train_percentage])
         test_loader = PickleLoader(folderPath, start=files[train_percentage + 1], end=files[-1])
+
         model = OnlineLearner(classifierName)
+        print("Inizio training")
         model.train(train_loader)
+        print("Inizio testing")
         tester = model.test(test_loader)
+        acc = accuracy_score(tester.iloc[:, 0], tester.iloc[:, 1])
+        report = classification_report(tester.iloc[:, 0], tester.iloc[:, 1])
+        print(f'Accuracy: {acc}')
+        print(f'Missclassification: {1 - acc}')
+        print(report)
         skplt.metrics.plot_confusion_matrix(tester.iloc[:, 0], tester.iloc[:, 1])
+        plt.title("ChurnDim = 60, PeriodDim = 60, Periods = 3\nPipeline: MinMaxScaler -> HoeffdingAdaptiveTreeClassifier")
         plt.show()
 
 
-# cProfile.run("Main('AdaptiveRandomForestClassifier', './../../output')")
 print("Classificatori disponibili: \n")
 print(ClassifierName.ADAP_RANDOM_FOREST.value)
 print(ClassifierName.HOEFFDING_ADAPTIVE_TREE.value)

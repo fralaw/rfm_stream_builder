@@ -1,10 +1,9 @@
 """
 // Name        : OnlineLearner.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 1.0
+// Version     : 2.0
 // Description : Classe OnlineLearner.
 """
-import enum
 
 import pandas as pd
 
