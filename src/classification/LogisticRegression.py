@@ -15,7 +15,8 @@ class LogisticRegression(ClassifierInterface):
 
     def learn(self, x: pd.DataFrame, y: pd.Series):
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
-        self.__model.learn_many(x, y)
+        self.__model = self.__model.learn_many(x, y)
+        return self
 
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario

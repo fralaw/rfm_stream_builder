@@ -21,7 +21,6 @@ class Main:
 
         train_loader = PickleLoader(folderPath, start=files[0], end=files[train_percentage])
         test_loader = PickleLoader(folderPath, start=files[train_percentage + 1], end=files[-1])
-
         model = OnlineLearner(classifierName)
         model.train(train_loader)
         tester = model.test(test_loader)
@@ -30,6 +29,7 @@ class Main:
 
 
 # cProfile.run("Main('AdaptiveRandomForestClassifier', './../../output')")
+print("Classificatori disponibili: \n")
 print(ClassifierName.ADAP_RANDOM_FOREST.value)
 print(ClassifierName.HOEFFDING_ADAPTIVE_TREE.value)
 print(ClassifierName.PERCEPTRON.value)

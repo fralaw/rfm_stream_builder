@@ -6,6 +6,7 @@
 """
 import pandas as pd
 from river import linear_model
+from river import preprocessing
 from ClassifierInterface import ClassifierInterface
 
 
@@ -14,11 +15,10 @@ class Perceptron(ClassifierInterface):
         self.__model = linear_model.Perceptron()
 
     def learn(self, x: pd.DataFrame, y: pd.Series):
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
-        self.__model.learn_many(x, y)
+        self.__model = self.__model.learn_many(x, y)
+        return self
 
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         return self.__model.predict_many(x)
 
     def predict_one(self, x: pd.Series) -> bool:

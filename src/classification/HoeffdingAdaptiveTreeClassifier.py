@@ -17,7 +17,8 @@ class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         x_dict = x.to_dict(orient="records")
         for x_row, y_row in zip(x_dict, y):
-            self.__model.learn_one(x_row, y_row)
+            self.__model = self.__model.learn_one(x_row, y_row)
+            return self
 
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario

@@ -34,7 +34,7 @@ class OnlineLearner:
         for df in loader:
             X = df.iloc[:, 0:-1]
             y = df.iloc[:, -1]
-            self.__model.learn(X, y)
+            self.__model = self.__model.learn(X, y)
 
     def predict(self, loader: PickleLoader):
         labels = pd.Series()
