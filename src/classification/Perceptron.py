@@ -10,9 +10,8 @@
 """
 
 import pandas as pd
-import river.preprocessing
 
-from river import linear_model
+from river import linear_model, preprocessing
 from ClassifierInterface import ClassifierInterface
 
 
@@ -23,8 +22,8 @@ class Perceptron(ClassifierInterface):
         Richiama il costruttore di linear_model.Perceptron()
     """
     def __init__(self):
-        scaler = river.preprocessing.StandardScaler()
-        self.__model = scaler | linear_model.Perceptron()
+
+        self.__model = preprocessing.StandardScaler() | linear_model.Perceptron()
 
     """
         Metodo learn che prende in input:

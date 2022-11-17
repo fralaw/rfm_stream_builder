@@ -22,7 +22,7 @@ class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
         Richiama il costruttore di tree.HoeffdingAdaptiveTreeClassifier()
     """
     def __init__(self):
-        self.__model = preprocessing.StandardScaler() | tree.HoeffdingAdaptiveTreeClassifier()
+        self.__model = preprocessing.StandardScaler() | tree.HoeffdingTreeClassifier()
 
     """
         Metodo learn che prende in input:

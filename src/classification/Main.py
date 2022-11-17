@@ -9,13 +9,18 @@ import os
 import matplotlib.pyplot as plt
 import scikitplot as skplt
 
-from sklearn.metrics import accuracy_score, classification_report, mean_absolute_error
+from sklearn.metrics import accuracy_score, classification_report
 from OnlineLearner import OnlineLearner
 from PickleLoader import PickleLoader
 from ClassifierName import ClassifierName
 
 
 class Main:
+    """
+        Metodo costruttore:
+        Definisce la percentuale di train e test e istanzia i loader del train e test.
+        Successivamente richiama il costruttore
+    """
     def __init__(self, classifierName: str, folderPath: str, start: str = None, end: str = None):
         files = os.listdir(folderPath)
         train_percentage = int((len(files) * 70) / 100)
@@ -24,7 +29,8 @@ class Main:
         test_loader = PickleLoader(folderPath, start=files[train_percentage + 1], end=files[-1])
 
         model = OnlineLearner(classifierName)
-        print("Inizio training")
+        print("Inizio tra"
+              "ining")
         model.train(train_loader)
         print("Inizio testing")
         tester = model.test(test_loader)
@@ -34,8 +40,10 @@ class Main:
         print(f'Missclassification: {1 - acc}')
         print(report)
         skplt.metrics.plot_confusion_matrix(tester.iloc[:, 0], tester.iloc[:, 1])
-        plt.title("ChurnDim = 60, PeriodDim = 60, Periods = 3\nPipeline: MinMaxScaler -> HoeffdingAdaptiveTreeClassifier")
+        plt.title("ChurnDim = 60, PeriodDim = 60, Periods = 3\n"
+                  "Pipeline: StandardScaler -> AdaptiveRandomForestClassifier")
         plt.show()
+        model.toPickle("./../../serialized_models")
 
 
 print("Classificatori disponibili: \n")

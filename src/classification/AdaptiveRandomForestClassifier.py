@@ -17,12 +17,12 @@ from ClassifierInterface import ClassifierInterface
 
 class AdaptiveRandomForestClassifier(ClassifierInterface):
     """
-        Metodo costruttore che inizializza il costruttore di uno AdaptiveStandardScaler
+        Metodo costruttore che inizializza il costruttore di uno MinMaxScaler
         Crea pipeline che contiene uno scaler e il modello che si vuole inizializzare.
         Richiama il costruttore di ensemble.AdaptiveRandomForestClassifier()
     """
     def __init__(self):
-        self.__model = preprocessing.MinMaxScaler() | ensemble.AdaptiveRandomForestClassifier()
+        self.__model = preprocessing.StandardScaler() | ensemble.AdaptiveRandomForestClassifier()
 
     """
         Metodo learn che prende in input:

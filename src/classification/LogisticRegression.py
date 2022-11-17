@@ -23,8 +23,8 @@ class LogisticRegression(ClassifierInterface):
         Richiama il costruttore di linear_model.LogisticRegression()
     """
     def __init__(self):
-        self.__scaler = preprocessing.StandardScaler()
-        self.__model = self.__scaler | linear_model.LogisticRegression()
+
+        self.__model = linear_model.LogisticRegression()
 
     """
         Metodo learn che prende in input:
@@ -35,7 +35,7 @@ class LogisticRegression(ClassifierInterface):
     """
     def learn(self, x: pd.DataFrame, y: pd.Series):
         # Aggiorna le medie dello scaler
-        self.__model.predict_many(x)
+        # self.__model.predict_many(x)
         self.__model = self.__model.learn_many(x, y)
         return self
 

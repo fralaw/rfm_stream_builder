@@ -2,39 +2,67 @@
 // Name        : OnlineLearner.py
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 2.0
-// Description : Classe OnlineLearner.
+// Description : Classe OnlineLearner .
 """
 
 import pandas as pd
-
+import os
+import datetime as dt
 from AdaptiveRandomForestClassifier import AdaptiveRandomForestClassifier
 from HoeffdingAdaptiveTreeClassifier import HoeffdingAdaptiveTreeClassifier
 from Perceptron import Perceptron
 from LogisticRegression import LogisticRegression
 from PickleLoader import PickleLoader
+import pickle
 
 
 class OnlineLearner:
-    def __init__(self, classifierName: str, fromPickle: str = None):
-        self.__classifierName = classifierName
-        match classifierName:
-            case 'AdaptiveRandomForestClassifier':
-                self.__model = AdaptiveRandomForestClassifier()
-            case 'HoeffdingAdaptiveTreeClassifier':
-                self.__model = HoeffdingAdaptiveTreeClassifier()
-            case 'Perceptron':
-                self.__model = Perceptron()
-            case 'LogisticRegression':
-                self.__model = LogisticRegression()
-            case _:
-                pass
+    """
+        Metodo costruttore:
+            - classifierName: di tipo str, opzionale, prende il nome del classificatore che si vuole istanziare;
+            - fromPickle: di tipo str, opzionale, per caricare un modello giò trainato.
+    """
+    def __init__(self, classifierName: str = None, fromPickle: str = None):
+        # Se non nullo
+        if fromPickle:
+            # Prova ad aprire il fromPickle e a caricare il modello
+            try:
+                with open(fromPickle, "rb") as f:
+                    self.__model = pickle.load(f)
+            # Altrimenti eccezione: File non trovato!
+            except FileNotFoundError as fnf:
+                print(fnf)
+        # Se fromPickle è nullo e classifierName non lo è
+        elif classifierName:
+            match classifierName:
+                case 'AdaptiveRandomForestClassifier':
+                    self.__model = AdaptiveRandomForestClassifier()
+                case 'HoeffdingAdaptiveTreeClassifier':
+                    self.__model = HoeffdingAdaptiveTreeClassifier()
+                case 'Perceptron':
+                    self.__model = Perceptron()
+                case 'LogisticRegression':
+                    self.__model = LogisticRegression()
+                case _:
+                    pass
+        else:
+            raise ValueError("Inserire nome classificatore per una nuova istanza oppure percorso a file "
+                             "contenente un modello serializzato")
 
+    """
+        Metodo che effettua il train del modello. 
+        Prende in input un oggetto loader di classe PickleLoader e addestra il modello puntato da quel loader.
+    """
     def train(self, loader: PickleLoader):
         for df in loader:
             X = df.iloc[:, 0:-1]
             y = df.iloc[:, -1]
             self.__model = self.__model.learn(X, y)
 
+    """
+        Metodo che effettua le predizioni.
+        Prende in input un oggetto loader di classe PickleLoader e restituisce una pandas.Series di labels.
+    """
     def predict(self, loader: PickleLoader):
         labels = pd.Series()
         for df in loader:
@@ -42,6 +70,12 @@ class OnlineLearner:
             pd.concat(labels, self.__model.predict_many(X))
         return labels
 
+    """
+        Metodo per la validazione. Effettua il predict della relativa classe su cui vine chiamato.
+        Prende in input un oggetto loader di classe Pickle Loader e restituisce un pandas.DataFrame costituito dalle
+        label originarie (target) e le label predette (y_test). Il df metterà  a confronto le label predette con quelle
+        originarie.
+    """
     def test(self, loader: PickleLoader):
         predicted_labels = []
         true_labels = []
@@ -54,5 +88,20 @@ class OnlineLearner:
         df = pd.concat([y_test, target], axis=1)
         return df
 
+    """
+        Metodo per serializzare il modello, preso in input un folderPath. 
+        Formato: NomeAlgoritmo__YYYY-MM-DD__HH-MM
+    """
     def toPickle(self, folderPath: str):
-        pass
+        t = dt.datetime.now().strftime("%Y-%m-%d  %H-%M")
+        filename = "__".join([self.__model.__class__.__name__, t]).replace(" ", "_")
+        file_path = os.path.join(folderPath, filename)
+        try:
+            with open(file_path, "wb") as f:
+                # "wb" argument opens the file in binary mode
+                pickle.dump(self.__model, f)
+        except FileNotFoundError:
+            os.mkdir(folderPath)
+            with open(file_path, 'wb') as f:
+                # Inserisci file nel pickle
+                pickle.dump(self.__model, f)
