@@ -29,5 +29,5 @@ def PickleLoader(folderPath: str, start: str = None, end: str = None):
             with open(file_path, "rb") as f:
                 # Carichiamo il pickle.
                 print(f)
-                yield filename, pickle.load(f)
+                yield pickle.load(f)
 

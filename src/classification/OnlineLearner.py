@@ -8,12 +8,13 @@
 import pandas as pd
 import os
 import datetime as dt
+import pickle
+
 from AdaptiveRandomForestClassifier import AdaptiveRandomForestClassifier
 from HoeffdingAdaptiveTreeClassifier import HoeffdingAdaptiveTreeClassifier
 from Perceptron import Perceptron
 from LogisticRegression import LogisticRegression
 from PickleLoader import PickleLoader
-import pickle
 
 
 class OnlineLearner:

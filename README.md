@@ -26,7 +26,7 @@ digitare:
 
 Esempio di input:
 
-``python StreamBuilder.py --password "la_tua_password" --database "nome_db" --churnDim 4 --periodDim 4 --periods 4 --start 2022-01-01 --end 2022-02-07``
+``python StreamBuilder.py --password "la_tua_password" --database "nome_db" --churnDim 115 --periodDim 60 --periods 3 --start 2022-01-01 --end 2022-02-07``
 
 Nella cartella resources è possibile trovare il diagramma delle classi e lo scripts sql per creare un db di test.
 

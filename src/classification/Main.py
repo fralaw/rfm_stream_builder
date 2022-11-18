@@ -40,7 +40,7 @@ class Main:
         print(f'Missclassification: {1 - acc}')
         print(report)
         skplt.metrics.plot_confusion_matrix(tester.iloc[:, 0], tester.iloc[:, 1])
-        plt.title("ChurnDim = 60, PeriodDim = 60, Periods = 3\n"
+        plt.title("ChurnDim = 115, PeriodDim = 60, Periods = 3\n"
                   "Pipeline: StandardScaler -> AdaptiveRandomForestClassifier")
         plt.show()
         model.toPickle("./../../serialized_models")

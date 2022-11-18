@@ -42,7 +42,7 @@ class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
         Metodo predict_many che prende in input:
         - un Dataframe;
         Restituisce una pandas.Series.
-        Richiama il predict_one di AdaptiveRandomForestClassifier.
+        Richiama il predict_one di HoeffdingAdaptiveTreeClassifier.
     """
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         labels = []
