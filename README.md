@@ -32,4 +32,15 @@ Nella cartella resources è possibile trovare il diagramma delle classi e lo scr
 
 ## Addestramento e Classificazione
 
+Dopo aver serializzato gli esempi nella cartella output, i file verranno caricati dal programma di addestramento e classificazione.
+
+Per eseguire il software è necessario utilizzare il terminale posizionandosi nella cartella 'rfm_stream_builder' del progetto e digitare:
+
+``python -m src.classification.online.Main`` oppure 
+``python -m src.classification.offline.Main`` seguito dai parametri di input:
+* --start START &emsp; Data di partenza in formato: AAAA-MM-DD, OPZIONALE: di default la prima della cartella.
+* --end END &emsp; Data di fine in formato: AAAA-MM-DD, OPZIONALE: di default l'ultima della cartella.
+* --serialized NAME &emsp; Parametro per caricare un modello precedentemente serializzato.
+
+Si dovrà successivamente scegliere
 

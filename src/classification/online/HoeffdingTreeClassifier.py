@@ -6,16 +6,16 @@
                     - learn_many(x: pd.DataFrame, y: pd.Series);
                     - predict_many(x: pd.DataFrame);
                     - predict_one(x: pd.Series).
-                 Eredita da ClassifierInterface.
+                 Eredita da OnlineClassifierInterface.
 """
 
 import pandas as pd
 
 from river import tree, stream
-from src.classification.ClassifierInterface import ClassifierInterface
+from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
-class HoeffdingTreeClassifier(ClassifierInterface):
+class HoeffdingTreeOnlineClassifier(OnlineClassifierInterface):
     """
         Richiama il costruttore di tree.HoeffdingTreeClassifier()
     """

@@ -7,14 +7,13 @@
 
 import os
 import matplotlib.pyplot as plt
-import pandas as pd
 import scikitplot as skplt
 import argparse
 
 from sklearn.metrics import accuracy_score, classification_report
-from src.classification.online.OnlineLearner import OnlineLearner
+from src.classification.offline.OfflineLearner import OfflineLearner
 from src.classification.PickleLoader import PickleLoader
-from src.classification.online.ClassifierEnum import ClassifierEnum
+from src.classification.offline.OfflineClassifierEnum import OfflineClassifierEnum
 
 
 class Main:
@@ -31,13 +30,13 @@ class Main:
     """
         Metodo printReport per la stampa di matrice di confusione e diversi score.
     """
-    def __printReport(self, results: pd.DataFrame, title: str):
-        acc = accuracy_score(results.iloc[:, 0], results.iloc[:, 1])
-        report = classification_report(results.iloc[:, 0], results.iloc[:, 1])
+    def __printReport(self, results: list, title: str):
+        acc = accuracy_score(results[0], results[1])
+        report = classification_report(results[0], results[1])
         print(f'Accuracy: {acc}')
         print(f'Missclassification: {1 - acc}')
         print(report)
-        skplt.metrics.plot_confusion_matrix(results.iloc[:, 0], results.iloc[:, 1])
+        skplt.metrics.plot_confusion_matrix(results[0], results[1])
         plt.title(title)
         plt.show()
 
@@ -49,20 +48,20 @@ class Main:
         # Carichiamo un modello precedentemente serializzato
         if serialized:
             file_path = os.path.join(self.MODELSFOLDERPATH, serialized)
-            learner = OnlineLearner(fromPickle=file_path)
+            learner = OfflineLearner(fromPickle=file_path)
         else:
             print("Classificatori disponibili: \n")
-            for elem in [elem for elem in ClassifierEnum]:
+            for elem in [elem for elem in OfflineClassifierEnum]:
                 print(f'{elem.value} - {elem.name}')
             print("\n")
 
             i = int(input("Inserire numero classificatore"))
-            if i not in [elem.value for elem in ClassifierEnum]:
+            if i not in [elem.value for elem in OfflineClassifierEnum]:
                 raise ValueError("Effettuare scelta correttamente")
 
             # Istanziamo il learner richiamando il costruttore di OnlineLearner e passando come parametro l'enumerativo
             # corrsipondente alla scelta
-            learner = OnlineLearner(ClassifierEnum(i))
+            learner = OfflineLearner(OfflineClassifierEnum(i))
 
         # in files carichiamo la lista di file in STREAMFOLDERPATH
         files = os.listdir(self.STREAMFOLDERPATH)

@@ -1,15 +1,15 @@
 """
-// Name        : ClassifierInterface.py
+// Name        : OnlineClassifierInterface.py
 // Author      : Andrea Brunetta, Francesco Luce
 // Version     : 3.0
-// Description : Interfaccia ClassifierInterface per permettere alle classi Perceptron, LogisticRegression,
+// Description : Interfaccia OnlineClassifierInterface per permettere alle classi Perceptron, LogisticRegression,
                  AdaptiveRandomForestClassifier e HoeffdingAdaptiveTreeClassifier di implementare i metodi sottostanti.
 """
 
 import pandas as pd
 
 
-class ClassifierInterface:
+class OnlineClassifierInterface:
     """
         Metodo learn che prende in input:
         - un pandas.Dataframe;

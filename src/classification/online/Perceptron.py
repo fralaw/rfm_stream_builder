@@ -6,16 +6,16 @@
                     - learn_many(x: pd.DataFrame, y: pd.Series);
                     - predict_many(x: pd.DataFrame);
                     - predict_one(x: pd.Series).
-                 Eredita da ClassifierInterface.
+                 Eredita da OnlineClassifierInterface.
 """
 
 import pandas as pd
 
-from river import linear_model, preprocessing
-from src.classification.ClassifierInterface import ClassifierInterface
+from river import linear_model
+from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
-class Perceptron(ClassifierInterface):
+class Perceptron(OnlineClassifierInterface):
     """
         Richiama il costruttore di linear_model.Perceptron()
     """
