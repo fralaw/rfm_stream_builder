@@ -11,30 +11,25 @@
 
 import pandas as pd
 
-from river import ensemble, preprocessing, stream
-from ClassifierInterface import ClassifierInterface
+from river import ensemble, stream
+from src.classification.ClassifierInterface import ClassifierInterface
 
 
 class AdaptiveRandomForestClassifier(ClassifierInterface):
     """
-        Metodo costruttore che inizializza il costruttore di uno MinMaxScaler
-        Crea pipeline che contiene uno scaler e il modello che si vuole inizializzare.
         Richiama il costruttore di ensemble.AdaptiveRandomForestClassifier()
     """
     def __init__(self):
-        self.__model = preprocessing.StandardScaler() | ensemble.AdaptiveRandomForestClassifier()
+        self.__model = ensemble.AdaptiveRandomForestClassifier()
 
     """
         Metodo learn che prende in input:
         - un pandas.Dataframe;
         - una pandas.Series.
-        Utilizza il meccanismo delle pipeline per aggiornare lo scaler ed effettuare il learn_one.
         Richiama il learn_one di AdaptiveRandomForestClassifier.
     """
     def learn(self, x: pd.DataFrame, y: pd.Series):
         for xi, yi in stream.iter_pandas(x, y):
-            # Aggiornare scaler
-            self.__model.predict_one(xi)
             self.__model = self.__model.learn_one(xi, yi)
         return self
 

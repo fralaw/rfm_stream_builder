@@ -1,7 +1,7 @@
 """
 // Name        : HoeffdingAdaptiveTreeClassifier.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 2.0
+// Version     : 3.0
 // Description : Classe concreta HoeffdingAdaptiveTreeClassifier che implementa i metodi:
                     - learn_many(x: pd.DataFrame, y: pd.Series);
                     - predict_many(x: pd.DataFrame);
@@ -11,30 +11,25 @@
 
 import pandas as pd
 
-from river import tree, preprocessing, stream
-from ClassifierInterface import ClassifierInterface
+from river import tree, stream
+from src.classification.ClassifierInterface import ClassifierInterface
 
 
 class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
     """
-        Metodo costruttore che inizializza il costruttore di uno MinMaxScaler
-        Crea pipeline che contiene uno scaler e il modello che si vuole inizializzare.
         Richiama il costruttore di tree.HoeffdingAdaptiveTreeClassifier()
     """
     def __init__(self):
-        self.__model = preprocessing.StandardScaler() | tree.HoeffdingAdaptiveTreeClassifier()
+        self.__model = tree.HoeffdingAdaptiveTreeClassifier()
 
     """
         Metodo learn che prende in input:
         - un pandas.Dataframe;
         - una pandas.Series.
-        Utilizza il meccanismo delle pipeline per aggiornare lo scaler ed effettuare il learn_one.
         Richiama il learn_one di HoeffdingAdaptiveTreeClassifier.
     """
     def learn(self, x: pd.DataFrame, y: pd.Series):
         for xi, yi in stream.iter_pandas(x, y):
-            # Aggiornare scaler
-            self.__model.predict_one(xi)
             self.__model.learn_one(xi, yi)
         return self
 

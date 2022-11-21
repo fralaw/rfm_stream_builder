@@ -1,29 +1,26 @@
 """
-// Name        : OnlineLearner.py
+// Name        : OfflineLearner.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 2.0
+// Version     : 3.0
 // Description : Classe OnlineLearner .
 """
 
-import pandas as pd
+import importlib
 import os
-import datetime as dt
 import pickle
+import pandas as pd
 
-from AdaptiveRandomForestClassifier import AdaptiveRandomForestClassifier
-from HoeffdingAdaptiveTreeClassifier import HoeffdingAdaptiveTreeClassifier
-from Perceptron import Perceptron
-from LogisticRegression import LogisticRegression
-from PickleLoader import PickleLoader
+from enum import Enum
+from src.classification.PickleLoader import PickleLoader
 
 
 class OnlineLearner:
     """
         Metodo costruttore:
-            - classifierName: di tipo str, opzionale, prende il nome del classificatore che si vuole istanziare;
+            - classifierName: di tipo Enum, opzionale, prende l'enumeratore del classificatore che si vuole istanziare;
             - fromPickle: di tipo str, opzionale, per caricare un modello giò trainato.
     """
-    def __init__(self, classifierName: str = None, fromPickle: str = None):
+    def __init__(self, classifierName: Enum = None, fromPickle: str = None):
         # Se non nullo
         if fromPickle:
             # Prova ad aprire il fromPickle e a caricare il modello
@@ -35,20 +32,12 @@ class OnlineLearner:
                 print(fnf)
         # Se fromPickle è nullo e classifierName non lo è
         elif classifierName:
-            match classifierName:
-                case 'AdaptiveRandomForestClassifier':
-                    self.__model = AdaptiveRandomForestClassifier()
-                case 'HoeffdingAdaptiveTreeClassifier':
-                    self.__model = HoeffdingAdaptiveTreeClassifier()
-                case 'Perceptron':
-                    self.__model = Perceptron()
-                case 'LogisticRegression':
-                    self.__model = LogisticRegression()
-                case _:
-                    pass
-        else:
-            raise ValueError("Inserire nome classificatore per una nuova istanza oppure percorso a file "
-                             "contenente un modello serializzato")
+            try:
+                module = importlib.import_module(f'src.classification.online.{classifierName.name}')
+                class_ = getattr(module, str(classifierName.name))
+                self.__model = class_()
+            except TypeError:
+                raise ValueError("Classificatore non disponibile")
 
     """
         Metodo che effettua il train del modello. 
@@ -93,9 +82,7 @@ class OnlineLearner:
         Metodo per serializzare il modello, preso in input un folderPath. 
         Formato: NomeAlgoritmo__YYYY-MM-DD__HH-MM
     """
-    def toPickle(self, folderPath: str):
-        t = dt.datetime.now().strftime("%Y-%m-%d  %H-%M")
-        filename = "__".join([self.__model.__class__.__name__, t]).replace(" ", "_")
+    def toPickle(self, folderPath: str, filename: str = None):
         file_path = os.path.join(folderPath, filename)
         try:
             with open(file_path, "wb") as f:

@@ -1,7 +1,7 @@
 """
 // Name        : ClassifierInterface.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 2.0
+// Version     : 3.0
 // Description : Interfaccia ClassifierInterface per permettere alle classi Perceptron, LogisticRegression,
                  AdaptiveRandomForestClassifier e HoeffdingAdaptiveTreeClassifier di implementare i metodi sottostanti.
 """

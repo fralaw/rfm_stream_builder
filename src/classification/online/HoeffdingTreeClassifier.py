@@ -1,8 +1,8 @@
 """
-// Name        : HoeffdingAdaptiveTreeClassifier.py
+// Name        : HoeffdingTreeClassifier.py
 // Author      : Andrea Brunetta, Francesco Luce
-// Version     : 2.0
-// Description : Classe concreta HoeffdingAdaptiveTreeClassifier che implementa i metodi:
+// Version     : 3.0
+// Description : Classe concreta HoeffdingTreeClassifier che implementa i metodi:
                     - learn_many(x: pd.DataFrame, y: pd.Series);
                     - predict_many(x: pd.DataFrame);
                     - predict_one(x: pd.Series).
@@ -11,30 +11,25 @@
 
 import pandas as pd
 
-from river import tree, preprocessing, stream
-from ClassifierInterface import ClassifierInterface
+from river import tree, stream
+from src.classification.ClassifierInterface import ClassifierInterface
 
 
-class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
+class HoeffdingTreeClassifier(ClassifierInterface):
     """
-        Metodo costruttore che inizializza il costruttore di uno MinMaxScaler
-        Crea pipeline che contiene uno scaler e il modello che si vuole inizializzare.
-        Richiama il costruttore di tree.HoeffdingAdaptiveTreeClassifier()
+        Richiama il costruttore di tree.HoeffdingTreeClassifier()
     """
     def __init__(self):
-        self.__model = preprocessing.StandardScaler() | tree.HoeffdingTreeClassifier()
+        self.__model = tree.HoeffdingTreeClassifier()
 
     """
         Metodo learn che prende in input:
         - un pandas.Dataframe;
         - una pandas.Series.
-        Utilizza il meccanismo delle pipeline per aggiornare lo scaler ed effettuare il learn_one.
-        Richiama il learn_one di HoeffdingAdaptiveTreeClassifier.
+        Richiama il learn_one di HoeffdingTreeClassifier.
     """
     def learn(self, x: pd.DataFrame, y: pd.Series):
         for xi, yi in stream.iter_pandas(x, y):
-            # Aggiornare scaler
-            self.__model.predict_one(xi)
             self.__model.learn_one(xi, yi)
         return self
 
@@ -42,7 +37,7 @@ class HoeffdingAdaptiveTreeClassifier(ClassifierInterface):
         Metodo predict_many che prende in input:
         - un Dataframe;
         Restituisce una pandas.Series.
-        Richiama il predict_one di AdaptiveRandomForestClassifier.
+        Richiama il predict_one di HoeffdingTreeClassifier.
     """
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         labels = []
