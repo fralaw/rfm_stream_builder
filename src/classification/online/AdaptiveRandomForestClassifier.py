@@ -11,7 +11,7 @@
 
 import pandas as pd
 
-from river import ensemble, stream
+from river import ensemble, stream, drift
 from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
@@ -19,7 +19,13 @@ class AdaptiveRandomForestClassifier(OnlineClassifierInterface):
     """
         Richiama il costruttore di ensemble.AdaptiveRandomForestClassifier()
     """
+
     def __init__(self):
+        """
+            Utilizzo di AdaptiveRandomForest con parametri.
+        """
+        # self.__model = ensemble.AdaptiveRandomForestClassifier(grace_period=2000, drift.ADWIN(delta=50),
+        # n_models=50, max_features=None)
         self.__model = ensemble.AdaptiveRandomForestClassifier()
 
     """
@@ -28,8 +34,13 @@ class AdaptiveRandomForestClassifier(OnlineClassifierInterface):
         - una pandas.Series.
         Richiama il learn_one di AdaptiveRandomForestClassifier.
     """
+
     def learn(self, x: pd.DataFrame, y: pd.Series):
         for xi, yi in stream.iter_pandas(x, y):
+            """
+                Aggiorna lo scaler
+            """
+            self.__model.predict_one(xi)
             self.__model = self.__model.learn_one(xi, yi)
         return self
 
@@ -39,6 +50,7 @@ class AdaptiveRandomForestClassifier(OnlineClassifierInterface):
         Restituisce una pandas.Series.
         Richiama il predict_one di AdaptiveRandomForestClassifier.
     """
+
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
         labels = []
         for xi in stream.iter_pandas(x):
@@ -51,5 +63,6 @@ class AdaptiveRandomForestClassifier(OnlineClassifierInterface):
         - una pandas.Series.
         Restituisce una valore booleano.
     """
+
     def predict_one(self, x: pd.Series) -> bool:
         return self.__model.predict_one(x.to_dict())

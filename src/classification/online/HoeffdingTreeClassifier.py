@@ -15,7 +15,7 @@ from river import tree, stream
 from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
-class HoeffdingTreeOnlineClassifier(OnlineClassifierInterface):
+class HoeffdingTreeClassifier(OnlineClassifierInterface):
     """
         Richiama il costruttore di tree.HoeffdingTreeClassifier()
     """

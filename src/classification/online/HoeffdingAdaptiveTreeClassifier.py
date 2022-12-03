@@ -11,7 +11,7 @@
 
 import pandas as pd
 
-from river import tree, stream
+from river import tree, stream, drift
 from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
@@ -20,7 +20,11 @@ class HoeffdingAdaptiveTreeClassifier(OnlineClassifierInterface):
         Richiama il costruttore di tree.HoeffdingAdaptiveTreeClassifier()
     """
     def __init__(self):
-        self.__model = tree.HoeffdingAdaptiveTreeClassifier()
+        """
+            Utilizzo di AdaptiveRandomForest con parametri.
+        """
+        # self.__model = tree.HoeffdingAdaptiveTreeClassifier(drift_detector=drift.ADWIN(delta=50), drift_window_threshold=2000, grace_period= 1000)
+        self.__model = tree.HoeffdingAdaptiveTreeClassifier(drift_detector=drift.ADWIN(delta=50))
 
     """
         Metodo learn che prende in input:

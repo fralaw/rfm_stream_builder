@@ -11,6 +11,9 @@
 import numpy as np
 
 from sklearn import linear_model
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
 from src.classification.offline.OfflineClassifierInterface import OfflineClassifierInterface
 
 
@@ -19,6 +22,10 @@ class OfflinePerceptron(OfflineClassifierInterface):
         Richiama il costruttore di linear_model.Perceptron()
     """
     def __init__(self):
+        """
+            Utilizzo di Perceptron di sklearn con parametri.
+        """
+        #self.__model = linear_model.Perceptron(penalty='l2')
         self.__model = linear_model.Perceptron()
 
     """
@@ -37,5 +44,4 @@ class OfflinePerceptron(OfflineClassifierInterface):
         Restituisce un ndarray
     """
     def predict(self, x: np.ndarray) -> np.ndarray:
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         return self.__model.predict(x)

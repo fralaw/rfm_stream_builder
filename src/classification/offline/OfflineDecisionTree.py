@@ -37,5 +37,4 @@ class OfflineDecisionTree(OfflineClassifierInterface):
         Restituisce un ndarray
     """
     def predict(self, x: np.ndarray) -> np.ndarray:
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         return self.__model.predict(x)

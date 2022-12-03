@@ -11,6 +11,9 @@
 import numpy as np
 
 from sklearn import linear_model
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
+
 from src.classification.offline.OfflineClassifierInterface import OfflineClassifierInterface
 
 
@@ -19,6 +22,10 @@ class OfflineLogisticRegression(OfflineClassifierInterface):
         Richiama il costruttore di linear_model.LogisticRegression()
     """
     def __init__(self):
+        """
+            Utilizzo di Logistic Regression con sklearn e uso di parametri e scaler attraverso il meccanismo Pipeline.
+        """
+        #self.__model = Pipeline([('scaler', MinMaxScaler()), ('svc', linear_model.LogisticRegression())])
         self.__model = linear_model.LogisticRegression()
 
     """
@@ -37,5 +44,4 @@ class OfflineLogisticRegression(OfflineClassifierInterface):
         Restituisce un ndarray
     """
     def predict(self, x: np.ndarray) -> np.ndarray:
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         return self.__model.predict(x)

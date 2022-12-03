@@ -11,7 +11,7 @@
 
 import pandas as pd
 
-from river import linear_model
+from river import linear_model, optim, preprocessing
 from src.classification.online.OnlineClassifierInterface import OnlineClassifierInterface
 
 
@@ -20,8 +20,12 @@ class Perceptron(OnlineClassifierInterface):
         Richiama il costruttore di linear_model.Perceptron()
     """
     def __init__(self):
+        """
+            Utilizzo di Perceptron con parametri e scaler.
+        """
+        #self.__model = linear_model.Perceptron(l2=0.0001, initializer=optim.initializers.Constant(3.14))
+        #self.__model = preprocessing.StandardScaler() | linear_model.Perceptron()
         self.__model = linear_model.Perceptron()
-
     """
         Metodo learn che prende in input:
         - un pandas.Dataframe;
@@ -29,6 +33,10 @@ class Perceptron(OnlineClassifierInterface):
         Richiama il learn_many di Perceptron.
     """
     def learn(self, x: pd.DataFrame, y: pd.Series):
+        """
+            Aggiorna lo scaler
+        """
+        #self.__model.predict_many(x)
         self.__model = self.__model.learn_many(x, y)
         return self
 
@@ -39,7 +47,6 @@ class Perceptron(OnlineClassifierInterface):
         Richiama il predict_many di Perceptron.
     """
     def predict_many(self, x: pd.DataFrame) -> pd.Series:
-        # orient="records" genera una lista dove ogni elemento è una riga del DataFrame sotto forma di dizionario
         return self.__model.predict_many(x)
 
     """
